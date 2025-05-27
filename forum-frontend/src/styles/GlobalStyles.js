@@ -2,8 +2,8 @@ import { createGlobalStyle } from 'styled-components';
 
 const GlobalStyle = createGlobalStyle`
   body {
-    font-family: 'Montserrat', Arial, sans-serif;
-    background-color: #e0c3fc;
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f4f4;
     color: #333;
     margin: 0;
     padding: 0;
@@ -11,33 +11,30 @@ const GlobalStyle = createGlobalStyle`
   }
 
   h1, h2, h3, h4, h5, h6 {
-    color: #a259ff;
-    font-family: 'Montserrat', Arial, sans-serif;
+    color: #0056b3;
   }
 
   a {
     text-decoration: none;
-    color: #a259ff;
+    color: #007bff;
     transition: color 0.3s ease;
-    font-family: 'Montserrat', Arial, sans-serif;
 
     &:hover {
-      color: #6c2eb7;
+      color: #0056b3;
     }
   }
 
   button {
     padding: 10px 15px;
-    background-color: #a259ff;
+    background-color: #007bff;
     color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s ease;
-    font-family: 'Montserrat', Arial, sans-serif;
 
     &:hover {
-      background-color: #6c2eb7;
+      background-color: #0056b3;
     }
 
     &:disabled {
@@ -50,19 +47,11 @@ const GlobalStyle = createGlobalStyle`
   input[type="password"],
   textarea {
     padding: 8px;
-    border: 1px solid #a259ff;
+    border: 1px solid #ddd;
     border-radius: 4px;
     margin-bottom: 10px;
     width: 100%;
     box-sizing: border-box;
-    font-family: 'Montserrat', Arial, sans-serif;
-  }
-
-  input::placeholder,
-  textarea::placeholder {
-    font-family: 'Montserrat', Arial, sans-serif;
-    color: #bfa6e6;
-    opacity: 1;
   }
 `;
 

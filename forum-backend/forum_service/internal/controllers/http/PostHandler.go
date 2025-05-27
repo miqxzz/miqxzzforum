@@ -1,17 +1,16 @@
 package http
 
 import (
+	utils "github.com/Engls/EnglsJwt"
+	"github.com/Engls/forum-project2/forum_service/internal/controllers/grpc"
+	"github.com/Engls/forum-project2/forum_service/internal/entity"
+	"github.com/Engls/forum-project2/forum_service/internal/repository"
+	"github.com/Engls/forum-project2/forum_service/internal/usecase"
+	"github.com/gin-gonic/gin"
+	"go.uber.org/zap"
 	"net/http"
 	"strconv"
 	"strings"
-
-	"github.com/gin-gonic/gin"
-	utils "github.com/miqxzz/commonmiqx"
-	"github.com/miqxzz/miqxzzforum/forum_service/internal/controllers/grpc"
-	"github.com/miqxzz/miqxzzforum/forum_service/internal/entity"
-	"github.com/miqxzz/miqxzzforum/forum_service/internal/repository"
-	"github.com/miqxzz/miqxzzforum/forum_service/internal/usecase"
-	"go.uber.org/zap"
 )
 
 type PostHandler struct {
@@ -38,6 +37,19 @@ func NewPostHandler(
 	}
 }
 
+// CreatePost godoc
+// @Summary Создать новый пост
+// @Description Создает новый пост в системе
+// @Tags Посты
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param post body entity.Post true "Данные поста"
+// @Success 201 {object} entity.Post
+// @Failure 400 {object} entity.ErrorResponse
+// @Failure 401 {object} entity.ErrorResponse
+// @Failure 500 {object} entity.ErrorResponse
+// @Router /posts [post]
 func (h *PostHandler) CreatePost(c *gin.Context) {
 	authHeader := c.GetHeader("Authorization")
 	if authHeader == "" {
@@ -81,6 +93,16 @@ func (h *PostHandler) CreatePost(c *gin.Context) {
 	c.JSON(http.StatusCreated, createdPost)
 }
 
+// GetPosts returns paginated list of posts with usernames
+// @Summary Получить посты
+// @Description Получить посты с юзернеймами
+// @Tags Посты
+// @Accept json
+// @Produce json
+// @Param page query int false "Page number" default(1)
+// @Param limit query int false "Items per page" default(10)
+// @Success 200 {object} map[string]interface{} "posts with usernames and total count"
+// @Router /posts [get]
 func (h *PostHandler) GetPosts(c *gin.Context) {
 	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
 	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "10"))
@@ -108,7 +130,7 @@ func (h *PostHandler) GetPosts(c *gin.Context) {
 			h.logger.Warn("Failed to get username",
 				zap.Int("userID", post.AuthorId),
 				zap.Error(err))
-			username = ""
+			username = "" // Используем пустое имя, если не удалось получить
 		}
 
 		postsWithUsernames[i] = map[string]interface{}{
@@ -116,7 +138,7 @@ func (h *PostHandler) GetPosts(c *gin.Context) {
 			"title":     post.Title,
 			"content":   post.Content,
 			"author_id": post.AuthorId,
-			"username":  username,
+			"username":  username, // Добавляем имя пользователя
 		}
 	}
 
@@ -128,6 +150,21 @@ func (h *PostHandler) GetPosts(c *gin.Context) {
 	})
 }
 
+// DeletePost godoc
+// @Summary Удалить пост
+// @Description Удаляет пост по ID (доступно автору или администратору)
+// @Tags Посты
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param id path int true "ID поста"
+// @Success 204 "No Content"
+// @Failure 400 {object} entity.ErrorResponse
+// @Failure 401 {object} entity.ErrorResponse
+// @Failure 403 {object} entity.ErrorResponse
+// @Failure 404 {object} entity.ErrorResponse
+// @Failure 500 {object} entity.ErrorResponse
+// @Router /posts/{id} [delete]
 func (h *PostHandler) DeletePost(c *gin.Context) {
 	authHeader := c.GetHeader("Authorization")
 	if authHeader == "" {
@@ -195,6 +232,20 @@ func (h *PostHandler) DeletePost(c *gin.Context) {
 	c.Status(http.StatusNoContent)
 }
 
+// UpdatePost updates an existing po
+// @Summary Редактировать пост
+// @Description Редактировать пост(если ты админ или владелец поста)
+// @Tags Посты
+// @Accept json
+// @Produce json
+// @Param id path int true "Post ID"
+// @Param Authorization header string true "Bearer token"
+// @Param post body entity.Post true "Post data"
+// @Success 200 {object} entity.Post
+// @Failure 400 {object} entity.ErrorResponse
+// @Failure 403 {object} entity.ErrorResponse
+// @Failure 500 {object} entity.ErrorResponse
+// @Router /posts/{id} [put]
 func (h *PostHandler) UpdatePost(c *gin.Context) {
 	authHeader := c.GetHeader("Authorization")
 	if authHeader == "" {
@@ -268,15 +319,4 @@ func (h *PostHandler) UpdatePost(c *gin.Context) {
 
 	h.logger.Info("Post deleted successfully", zap.Int("postID", postID))
 	c.JSON(http.StatusOK, updatedpost)
-}
-
-func (h *PostHandler) GetTotalPostsCount(c *gin.Context) {
-	count, err := h.postUsecase.GetTotalPostsCount(c.Request.Context())
-	if err != nil {
-		h.logger.Error("Failed to get total posts count", zap.Error(err))
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{"count": count})
 }

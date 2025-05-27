@@ -1,52 +1,38 @@
 import React from 'react';
 import styled from 'styled-components';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../Chat/AuthContext';
+import { useAuth } from '../Chat/AuthContext'; // Импортируем useAuth
 
-const Sidebar = styled.nav`
-  background: #a259ff;
+const Nav = styled.nav`
+  background-color:rgb(24, 255, 16);
   color: white;
-  width: 220px;
-  min-height: 100vh;
+  padding: 10px 20px;
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  padding: 30px 20px 0 20px;
-  position: fixed;
-  left: 0;
-  top: 0;
-  z-index: 100;
+  justify-content: space-between;
+  align-items: center;
 `;
 
-const SidebarTitle = styled.h1`
-  font-size: 1.7em;
-  margin-bottom: 40px;
-  color: #fff;
-  align-self: center;
+const NavTitle = styled.h1`
+  margin-left: 45%;
+  font-size: 1.5em;
 `;
 
-const SidebarLinks = styled.div`
-  display: flex;
-  flex-direction: column;
-  width: 100%;
+const NavLinks = styled.div`
   a {
-    color: #fff;
-    margin: 10px 0;
+    color: white;
+    margin-left: 20px;
     text-decoration: none;
-    font-size: 1.1em;
-    padding: 8px 12px;
-    border-radius: 6px;
-    transition: background 0.2s, color 0.2s;
+    transition: color 0.3s ease;
+
     &:hover {
-      background: #6c2eb7;
-      color: #e0c3fc;
+      color: #f4f4f4;
     }
   }
 `;
 
 const Navbar = () => {
     const navigate = useNavigate();
-    const { isAuthenticated, logout } = useAuth();
+    const { isAuthenticated, logout } = useAuth(); // Используем useAuth для получения состояния аутентификации и метода logout
 
     const handleLogout = () => {
         logout();
@@ -54,22 +40,22 @@ const Navbar = () => {
     };
 
     return (
-        <Sidebar>
-            <SidebarTitle>Форум</SidebarTitle>
-            <SidebarLinks>
+        <Nav>
+            <NavTitle>MyForumGo</NavTitle>
+            <NavLinks>
                 {isAuthenticated ? (
                     <>
-                        <Link to="/posts">Посты</Link>
-                        <Link to="#" onClick={handleLogout}>Выйти</Link>
+                        <Link to="/posts">Posts</Link>
+                        <Link to="#" onClick={handleLogout}>Logout</Link>
                     </>
                 ) : (
                     <>
-                        <Link to="/login">Войти</Link>
-                        <Link to="/register">Зарегистрироваться</Link>
+                        <Link to="/login">Login</Link>
+                        <Link to="/register">Register</Link>
                     </>
                 )}
-            </SidebarLinks>
-        </Sidebar>
+            </NavLinks>
+        </Nav>
     );
 };
 

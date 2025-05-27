@@ -7,252 +7,111 @@ import AddComment from './AddComment';
 // === Styled Components ===
 
 const Container = styled.div`
-    max-width: 700px;
-    margin: 32px auto;
-    padding: 32px 20px 24px 20px;
-    background-color: #f9f9ff;
-    border-radius: 18px;
-    box-shadow: 0 0 16px rgba(162, 89, 255, 0.10);
-    border: 1.5px solid rgba(162, 89, 255, 0.3);
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 `;
 
 const PostItemContainer = styled.div`
-    margin-bottom: 40px;
-    padding: 32px 28px 24px 28px;
-    border: 1.5px solid rgba(162, 89, 255, 0.25);
-    border-radius: 18px;
-    background-color: #fff;
-    box-shadow: 0 4px 24px rgba(162, 89, 255, 0.07);
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    max-width: 600px;
-    margin-left: auto;
-    margin-right: auto;
+    margin-bottom: 20px;
+    padding: 15px;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    background-color: #f9f9f9;
 `;
 
 const PostTitle = styled.h3`
-    color: #a259ff;
-    text-align: left;
-    margin-bottom: 18px;
-    font-size: 2rem;
-    font-weight: 800;
-    letter-spacing: 0.5px;
-    font-family: 'Montserrat', Arial, sans-serif;
+    color: #333;
+    text-align: center;
+    margin-bottom: 5px;
+    font-size: 32px;
 `;
 
 const PostContent = styled.p`
-    color: #6c2eb7;
-    font-size: 1.1rem;
-    margin-bottom: 18px;
+    color: #555;
+    font-size: 16px;
+    margin-bottom: 10px;
     text-align: left;
-    font-family: 'Montserrat', Arial, sans-serif;
 `;
 
 const PostAuthor = styled.small`
-    color: #a259ff;
+    color: #777;
     font-style: italic;
-    margin-bottom: 18px;
-    display: block;
-    font-size: 1rem;
-    font-family: 'Montserrat', Arial, sans-serif;
-`;
-
-const ButtonContainer = styled.div`
-    display: flex;
-    gap: 16px;
-    margin-top: 18px;
-    justify-content: flex-end;
-`;
-
-const EditButton = styled.button`
-    background-color: #a259ff;
-    color: #fff;
-    padding: 12px 28px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background 0.2s, box-shadow 0.2s;
-    font-family: 'Montserrat', Arial, sans-serif;
-    font-size: 1rem;
-    min-width: 130px;
-    height: 44px;
-    font-weight: 700;
-    box-shadow: 0 2px 8px rgba(162, 89, 255, 0.13);
-    letter-spacing: 0.5px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    &:hover {
-        background-color: #7c3aed;
-        box-shadow: 0 4px 16px rgba(162, 89, 255, 0.18);
-    }
 `;
 
 const DeleteButton = styled.button`
     background-color: #f44336;
     color: white;
-    padding: 12px 28px;
+    padding: 8px 12px;
     border: none;
-    border-radius: 8px;
+    border-radius: 4px;
     cursor: pointer;
-    transition: background 0.2s, box-shadow 0.2s;
-    font-family: 'Montserrat', Arial, sans-serif;
-    font-size: 1rem;
-    min-width: 130px;
-    height: 44px;
-    font-weight: 600;
-    box-shadow: 0 2px 8px rgba(244, 67, 54, 0.08);
+    transition: background-color 0.2s ease;
+    margin-right: 10px;
+
     &:hover {
         background-color: #d32f2f;
-        box-shadow: 0 4px 16px rgba(244, 67, 54, 0.13);
     }
+    margin-top: 10px;
+`;
+
+const EditButton = styled.button`
+    background-color: #2196F3;
+    color: white;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+
+    &:hover {
+        background-color: #0b7dda;
+    }
+    margin-top: 10px;
+`;
+
+const ButtonContainer = styled.div`
+    display: flex;
+`;
+
+const LoadingMessage = styled.p`
+    color: #555;
+    font-style: italic;
+    text-align: center;
+`;
+
+const ErrorMessage = styled.p`
+    color: #d32f2f;
+    text-align: center;
 `;
 
 const PaginationContainer = styled.div`
     display: flex;
     justify-content: center;
-    margin: 32px 0 0 0;
+    margin: 20px 0;
     gap: 10px;
-    flex-wrap: wrap;
-    align-items: center;
 `;
 
 const PaginationButton = styled.button`
-    padding: 10px 18px;
+    padding: 5px 10px;
     cursor: pointer;
-    background-color: ${props => props.active ? '#a259ff' : 'transparent'};
-    color: ${props => props.active ? '#fff' : '#a259ff'};
-    border: 1.5px solid #a259ff;
-    border-radius: 7px;
-    transition: background 0.2s, color 0.2s, box-shadow 0.2s;
-    font-family: 'Montserrat', Arial, sans-serif;
-    font-size: 1rem;
-    min-width: 110px;
-    font-weight: 600;
-    box-shadow: 0 2px 8px rgba(162, 89, 255, 0.06);
-    &:hover:not(:disabled) {
-        background: #e0c3fc;
-        color: #6c2eb7;
-        box-shadow: 0 4px 16px rgba(162, 89, 255, 0.13);
-    }
+    background-color: ${props => props.active ? '#2196F3' : '#f5f5f5'};
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    
     &:disabled {
         opacity: 0.5;
         cursor: not-allowed;
-        background: #f9f9ff;
-        color: #bfa6e6;
-        border: 1.5px solid #e0c3fc;
-        box-shadow: none;
     }
 `;
 
 const PageSizeSelect = styled.select`
-    padding: 10px 16px;
-    border-radius: 7px;
-    border: 2.5px solid #a259ff;
-    color: #a259ff;
-    background: #f9f9ff;
-    font-family: 'Montserrat', Arial, sans-serif;
-    font-size: 1rem;
-    margin-right: 10px;
-    font-weight: 600;
-    outline: none;
-    box-shadow: 0 2px 8px rgba(162, 89, 255, 0.08);
-`;
-
-const LoadingMessage = styled.p`
-    color: #a259ff;
-    font-style: italic;
-    text-align: center;
-    font-family: 'Montserrat', Arial, sans-serif;
-`;
-
-const EditInput = styled.input`
-    width: 100%;
-    margin-bottom: 10px;
-    font-size: 2rem;
-    text-align: center;
-    padding: 12px;
-    border: 1.5px solid #a259ff;
-    border-radius: 8px;
-    font-family: 'Montserrat', Arial, sans-serif;
-    font-weight: 700;
-    color: #a259ff;
-    background: #f9f9ff;
-    outline: none;
-    transition: border 0.2s;
-    &:focus {
-        border: 2px solid #6c2eb7;
-    }
-`;
-
-const EditTextarea = styled.textarea`
-    width: 100%;
-    min-height: 100px;
-    margin-bottom: 10px;
-    padding: 12px;
-    border: 1.5px solid #a259ff;
-    border-radius: 8px;
-    font-size: 1.1rem;
-    font-family: 'Montserrat', Arial, sans-serif;
-    background: #f9f9ff;
-    color: #6c2eb7;
-    outline: none;
-    transition: border 0.2s;
-    resize: vertical;
-    &:focus {
-        border: 2px solid #6c2eb7;
-    }
-`;
-
-const EditButtonStyled = styled.button`
-    background-color: #a259ff;
-    color: #fff;
-    padding: 12px 28px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-family: 'Montserrat', Arial, sans-serif;
-    font-size: 1rem;
-    min-width: 130px;
-    height: 44px;
-    font-weight: 700;
-    margin-right: 12px;
-    transition: background 0.2s, box-shadow 0.2s;
-    box-shadow: 0 2px 8px rgba(162, 89, 255, 0.13);
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    &:hover {
-        background-color: #7c3aed;
-        box-shadow: 0 4px 16px rgba(162, 89, 255, 0.18);
-    }
-`;
-
-const CancelButtonStyled = styled.button`
-    background-color: #f3f3f3;
-    color: #a259ff;
-    padding: 12px 28px;
-    border: 1.5px solid #a259ff;
-    border-radius: 8px;
-    cursor: pointer;
-    font-family: 'Montserrat', Arial, sans-serif;
-    font-size: 1rem;
-    min-width: 130px;
-    height: 44px;
-    font-weight: 700;
-    transition: background 0.2s, color 0.2s, box-shadow 0.2s;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    &:hover {
-        background: #e0c3fc;
-        color: #6c2eb7;
-        box-shadow: 0 4px 16px rgba(162, 89, 255, 0.13);
-    }
+    padding: 5px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
 `;
 
 // === PostList Component ===
@@ -285,7 +144,7 @@ const PostList = () => {
                 total: response.data.total || 0
             }));
         } catch (error) {
-            console.error('Ошибка при получении постов:', error);
+            console.error('Error fetching posts:', error);
         }
     }, [pagination.page, pagination.limit]);
 
@@ -303,7 +162,7 @@ const PostList = () => {
         const token = localStorage.getItem('token');
 
         if (!token) {
-            alert('Вы не авторизованы.');
+            alert('You are not authenticated.');
             return;
         }
 
@@ -317,9 +176,9 @@ const PostList = () => {
         } catch (error) {
             console.error('Error deleting post:', error);
             if (error.response && error.response.status === 403) {
-                alert('У вас нет прав на удаление этого поста.');
+                alert('You are not authorized to delete this post.');
             } else {
-                alert('Не удалось удалить пост.');
+                alert('Failed to delete post.');
             }
         }
     };
@@ -340,7 +199,7 @@ const PostList = () => {
         const token = localStorage.getItem('token');
 
         if (!token) {
-            alert('Вы не авторизованы.');
+            alert('You are not authenticated.');
             return;
         }
 
@@ -358,9 +217,9 @@ const PostList = () => {
         } catch (error) {
             console.error('Error updating post:', error);
             if (error.response && error.response.status === 403) {
-                alert('У вас нет прав на редактирование этого поста.');
+                alert('You are not authorized to edit this post.');
             } else {
-                alert('Не удалось обновить пост.');
+                alert('Failed to update post.');
             }
         }
     };
@@ -385,11 +244,11 @@ const PostList = () => {
     };
 
     if (posts === null) {
-        return <LoadingMessage>Загрузка постов...</LoadingMessage>;
+        return <LoadingMessage>Loading posts...</LoadingMessage>;
     }
 
     if (posts.length === 0 && !isAdmin) {
-        return <LoadingMessage>Нет постов.</LoadingMessage>;
+        return <LoadingMessage>No posts available.</LoadingMessage>;
     }
 
     const totalPages = Math.ceil(pagination.total / pagination.limit);
@@ -397,41 +256,43 @@ const PostList = () => {
     return (
         <Container>
             {posts.length === 0 && isAdmin ? (
-                <LoadingMessage>Нет постов.</LoadingMessage>
+                <LoadingMessage>No posts yet.</LoadingMessage>
             ) : (
                 <>
                     {posts.map(post => (
                         <PostItemContainer key={post.id}>
                             {editingPostId === post.id ? (
                                 <>
-                                    <EditInput 
+                                    <input 
                                         type="text" 
                                         value={editTitle} 
                                         onChange={(e) => setEditTitle(e.target.value)} 
+                                        style={{width: '100%', marginBottom: '10px', fontSize: '32px', textAlign: 'center'}}
                                     />
-                                    <EditTextarea 
+                                    <textarea 
                                         value={editContent} 
                                         onChange={(e) => setEditContent(e.target.value)} 
+                                        style={{width: '100%', minHeight: '100px', marginBottom: '10px'}}
                                     />
                                     <ButtonContainer>
-                                        <EditButtonStyled onClick={() => handleSaveEdit(post.id)}>Сохранить</EditButtonStyled>
-                                        <CancelButtonStyled onClick={handleCancelEdit}>Отменить</CancelButtonStyled>
+                                        <button onClick={() => handleSaveEdit(post.id)}>Save</button>
+                                        <button onClick={handleCancelEdit}>Cancel</button>
                                     </ButtonContainer>
                                 </>
                             ) : (
                                 <>
                                     <PostTitle>{post.title}</PostTitle>
                                     <PostContent>{post.content}</PostContent>
-                                    <PostAuthor>От: {post.username || `User ID: ${post.author_id}`}</PostAuthor>
+                                    <PostAuthor>Posted by: {post.username || `User ID: ${post.author_id}`}</PostAuthor>
                                     <CommentList postId={post.id} />
                                     <AddComment postId={post.id} onCommentCreated={handleCommentCreated} />
                                     {(isAdmin || userId === post.author_id) && (
                                         <ButtonContainer>
                                             <EditButton onClick={() => handleEditPost(post)}>
-                                                Редактировать
+                                                Edit
                                             </EditButton>
                                             <DeleteButton onClick={() => handleDeletePost(post.id)}>
-                                                Удалить
+                                                Delete
                                             </DeleteButton>
                                         </ButtonContainer>
                                     )}
@@ -445,40 +306,40 @@ const PostList = () => {
                             value={pagination.limit} 
                             onChange={handleLimitChange}
                         >
-                            <option value={5}>5 на странице</option>
-                            <option value={10}>10 на странице</option>
-                            <option value={20}>20 на странице</option>
+                            <option value={5}>5 per page</option>
+                            <option value={10}>10 per page</option>
+                            <option value={20}>20 per page</option>
                         </PageSizeSelect>
 
                         <PaginationButton
                             onClick={() => handlePageChange(1)}
                             disabled={pagination.page <= 1}
                         >
-                            Первая
+                            First
                         </PaginationButton>
 
                         <PaginationButton
                             onClick={() => handlePageChange(pagination.page - 1)}
                             disabled={pagination.page <= 1}
                         >
-                            Предыдущая
+                            Previous
                         </PaginationButton>
+
+                        <span>Page {pagination.page} of {totalPages}</span>
 
                         <PaginationButton
                             onClick={() => handlePageChange(pagination.page + 1)}
                             disabled={pagination.page >= totalPages}
                         >
-                            Следующая
+                            Next
                         </PaginationButton>
 
                         <PaginationButton
                             onClick={() => handlePageChange(totalPages)}
                             disabled={pagination.page >= totalPages}
                         >
-                            Последняя
+                            Last
                         </PaginationButton>
-
-                        <span>Страница {pagination.page} из {totalPages}</span>
                     </PaginationContainer>
                 </>
             )}

@@ -5,8 +5,8 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/miqxzz/miqxzzforum/forum_service/internal/entity"
-	"github.com/miqxzz/miqxzzforum/forum_service/mocks"
+	"github.com/Engls/forum-project2/forum_service/internal/entity"
+	"github.com/Engls/forum-project2/forum_service/mocks"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"go.uber.org/zap"
@@ -75,9 +75,9 @@ func TestCommentsUsecases_GetCommentByPostID_Success(t *testing.T) {
 		{ID: 2, PostId: 1, AuthorId: 2, Content: "Comment 2"},
 	}
 
-	mockCommentRepo.On("GetComments", mock.Anything, 1, 5, 0).Return(comments, nil)
+	mockCommentRepo.On("GetCommentsByPostID", mock.Anything, 1).Return(comments, nil)
 
-	result, err := commentsUsecases.GetComments(context.Background(), 1, 5, 0)
+	result, err := commentsUsecases.GetCommentByPostID(context.Background(), 1)
 
 	assert.NoError(t, err)
 	assert.Equal(t, comments, result)
@@ -93,9 +93,9 @@ func TestCommentsUsecases_GetCommentByPostID_Failure(t *testing.T) {
 
 	commentsUsecases := NewCommentsUsecases(mockCommentRepo, logger)
 
-	mockCommentRepo.On("GetComments", mock.Anything, 1, 5, 0).Return(nil, errors.New("failed to get comments"))
+	mockCommentRepo.On("GetCommentsByPostID", mock.Anything, 1).Return(nil, errors.New("failed to get comments"))
 
-	result, err := commentsUsecases.GetComments(context.Background(), 1, 5, 0)
+	result, err := commentsUsecases.GetCommentByPostID(context.Background(), 1)
 
 	assert.Error(t, err)
 	assert.Nil(t, result)

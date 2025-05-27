@@ -3,50 +3,39 @@ import axios from 'axios';
 import styled from 'styled-components';
 
 const AddCommentContainer = styled.div`
-    margin-top: 24px;
-    padding: 18px 14px 14px 14px;
-    border: 1.5px solid rgba(162, 89, 255, 0.3);
-    border-radius: 12px;
-    background-color: #f6f2fa;
+    margin-top: 20px;
+    padding: 15px;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    background-color: #f9f9f9;
 `;
 
 const CommentForm = styled.form`
     display: flex;
     flex-direction: column;
-    gap: 10px;
 `;
 
 const CommentTextarea = styled.textarea`
-    padding: 12px;
-    border: 1.2px solid #a259ff;
-    border-radius: 6px;
-    margin-bottom: 0;
-    font-size: 15px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    font-size: 14px;
     resize: vertical;
-    background: #fff;
-    font-family: 'Montserrat', Arial, sans-serif;
-    min-height: 60px;
-    &::placeholder {
-        font-family: 'Montserrat', Arial, sans-serif;
-        color: #bfa6e6;
-        opacity: 1;
-    }
 `;
 
 const CommentButton = styled.button`
-    background-color: #a259ff;
+    background-color: #4CAF50;
     color: white;
-    padding: 12px 0;
+    padding: 10px 15px;
     border: none;
-    border-radius: 6px;
+    border-radius: 4px;
     cursor: pointer;
     font-size: 16px;
     transition: background-color 0.2s ease;
-    font-family: 'Montserrat', Arial, sans-serif;
-    width: 100%;
-    margin-top: 4px;
+
     &:hover {
-        background-color: #6c2eb7;
+        background-color: #3e8e41;
     }
 `;
 
@@ -58,12 +47,12 @@ const AddComment = ({ postId, onCommentCreated }) => {
         const token = localStorage.getItem('token');
 
         if (!content.trim()) {
-            alert('Пожалуйста, введите комментарий.');
+            alert('Please enter a comment.');
             return;
         }
 
         if (!token) {
-            alert('Вы не авторизованы.');
+            alert('You are not authenticated.');
             return;
         }
 
@@ -78,8 +67,8 @@ const AddComment = ({ postId, onCommentCreated }) => {
                 onCommentCreated();
             }
         } catch (error) {
-            console.error('Ошибка при создании комментария:', error);
-            alert('Не удалось отправить комментарий.');
+            console.error('Error creating comment:', error);
+            alert('Failed to post comment.');
         }
     };
 
@@ -89,10 +78,10 @@ const AddComment = ({ postId, onCommentCreated }) => {
                 <CommentTextarea
                     value={content}
                     onChange={(e) => setContent(e.target.value)}
-                    placeholder="Добавить комментарий..."
+                    placeholder="Add a comment..."
                     rows="3" // Allow for multiline input
                 />
-                <CommentButton type="submit">Отправить комментарий</CommentButton>
+                <CommentButton type="submit">Post Comment</CommentButton>
             </CommentForm>
         </AddCommentContainer>
     );

@@ -1,36 +1,42 @@
 package main
 
 import (
-	utils "github.com/miqxzz/commonmiqx"
-	mygrpc "github.com/miqxzz/miqxzzforum/auth_service/internal/delivery/grpc"
+	utils "github.com/Engls/EnglsJwt"
+	mygrpc "github.com/Engls/forum-project2/auth_service/internal/delivery/grpc"
 	"google.golang.org/grpc"
 
+	user "github.com/Engls/forum-project2/auth_service/internal/proto"
+	"github.com/gin-contrib/cors"
 	"log"
 	"net"
 	"time"
 
-	"github.com/gin-contrib/cors"
-	user "github.com/miqxzz/miqxzzforum/auth_service/internal/proto"
-
+	_ "github.com/Engls/forum-project2/auth_service/docs"
+	"github.com/Engls/forum-project2/auth_service/internal/config"
+	"github.com/Engls/forum-project2/auth_service/internal/delivery/http"
+	"github.com/Engls/forum-project2/auth_service/internal/repository"
+	"github.com/Engls/forum-project2/auth_service/internal/usecase"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/sqlite3"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/mattn/go-sqlite3"
-	_ "github.com/miqxzz/miqxzzforum/auth_service/docs"
-	"github.com/miqxzz/miqxzzforum/auth_service/internal/config"
-	"github.com/miqxzz/miqxzzforum/auth_service/internal/delivery/http"
-	"github.com/miqxzz/miqxzzforum/auth_service/internal/repository"
-	"github.com/miqxzz/miqxzzforum/auth_service/internal/usecase"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"go.uber.org/zap"
 )
 
+// @title Auth Service API
+// @version 1.0
+// @description This is the API documentation for the Auth Service.
+// @host localhost:8080
+// @BasePath /
+
 func main() {
 
-	logger, _ := zap.NewProduction()
+	utils.InitLogger()
+	logger := utils.GetLogger()
 
 	cfg, err := config.LoadConfig()
 	if err != nil {

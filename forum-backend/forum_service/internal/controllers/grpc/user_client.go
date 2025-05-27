@@ -2,9 +2,8 @@ package grpc
 
 import (
 	"context"
+	"github.com/Engls/forum-project2/forum_service/internal/proto"
 	"log"
-
-	user "github.com/miqxzz/miqxzzforum/forum_service/internal/proto"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"

@@ -5,44 +5,41 @@ import styled from 'styled-components';
 const CreatePostContainer = styled.div`
   margin-bottom: 20px;
   padding: 15px;
-  border: 1px solid #a259ff;
+  border: 1px solid #ddd;
   border-radius: 5px;
-  background-color: #f9f9ff;
+  background-color: #f9f9f9;
 `;
 
 const Input = styled.input`
   padding: 8px;
   margin-bottom: 10px;
-  border: 1px solid #a259ff;
+  border: 1px solid #ddd;
   border-radius: 4px;
   width: 100%;
   box-sizing: border-box;
-  font-family: 'Montserrat', Arial, sans-serif;
 `;
 
 const TextArea = styled.textarea`
   padding: 8px;
   margin-bottom: 10px;
-  border: 1px solid #a259ff;
+  border: 1px solid #ddd;
   border-radius: 4px;
   width: 100%;
   box-sizing: border-box;
   height: 100px;
-  font-family: 'Montserrat', Arial, sans-serif;
 `;
 
 const Button = styled.button`
   padding: 10px 15px;
-  background-color: #a259ff;
+  background-color: rgb(24, 255, 16);
   color: white;
   border: none;
   border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.3s ease;
-  font-family: 'Montserrat', Arial, sans-serif;
 
   &:hover {
-    background-color: #6c2eb7;
+    background-color: rgb(24, 234, 16);
   }
 `;
 
@@ -65,28 +62,28 @@ const CreatePost = ({ onPostCreated }) => {
             setNewPost({ title: '', content: '' });
             onPostCreated(); // Refresh the list
         } catch (error) {
-            console.error('Ошибка при создании поста:', error);
-            alert('Ошибка при создании поста. Пожалуйста, попробуйте снова.');
+            console.error('Error creating post:', error);
+            alert('Error creating post. Please try again.');
         }
     };
 
     return (
         <CreatePostContainer>
-            <h3 style={{ color: '#a259ff' }}>Создать новый пост</h3>
+            <h3>Create New Post</h3>
             <Input
                 type="text"
                 name="title"
-                placeholder="Заголовок"
-                value={newPost.title}
+                placeholder="Title"
+                value={newPost.title} // Исправлено: Добавлено значение
                 onChange={handleInputChange}
             />
             <TextArea
                 name="content"
-                placeholder="Содержание"
+                placeholder="Content"
                 value={newPost.content}
                 onChange={handleInputChange}
             />
-            <Button onClick={createPost}>Создать пост</Button>
+            <Button onClick={createPost}>Create Post</Button>
         </CreatePostContainer>
     );
 };

@@ -11,7 +11,7 @@ func InitLogger() {
 	config := zap.NewProductionConfig()
 	config.EncoderConfig.TimeKey = "timestamp"
 	config.EncoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
-	config.OutputPaths = []string{"stdout", "forum-backend/auth_service/logs/app.log"}
+	config.OutputPaths = []string{"stdout", "logs/app.log"}
 	config.ErrorOutputPaths = []string{"stderr"}
 
 	var err error

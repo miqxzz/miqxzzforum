@@ -5,7 +5,7 @@ package mocks
 import (
 	context "context"
 
-	entity "github.com/miqxzz/miqxzzforum/forum_service/internal/entity"
+	entity "github.com/Engls/forum-project2/forum_service/internal/entity"
 	mock "github.com/stretchr/testify/mock"
 )
 
@@ -92,14 +92,34 @@ func (_m *PostUsecase) GetPostByID(ctx context.Context, id int) (*entity.Post, e
 	return r0, r1
 }
 
-// GetPosts provides a mock function with given fields: ctx, limit, offset
-func (m *PostUsecase) GetPosts(ctx context.Context, limit, offset int) ([]entity.Post, error) {
-	args := m.Called(ctx, limit, offset)
-	var r0 []entity.Post
-	if args.Get(0) != nil {
-		r0 = args.Get(0).([]entity.Post)
+// GetPosts provides a mock function with given fields: ctx
+func (_m *PostUsecase) GetPosts(ctx context.Context) ([]entity.Post, error) {
+	ret := _m.Called(ctx)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetPosts")
 	}
-	return r0, args.Error(1)
+
+	var r0 []entity.Post
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context) ([]entity.Post, error)); ok {
+		return rf(ctx)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context) []entity.Post); ok {
+		r0 = rf(ctx)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]entity.Post)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context) error); ok {
+		r1 = rf(ctx)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
 }
 
 // UpdatePost provides a mock function with given fields: ctx, post
@@ -132,7 +152,6 @@ func (_m *PostUsecase) UpdatePost(ctx context.Context, post entity.Post) (*entit
 	return r0, r1
 }
 
-// GetTotalPostsCount provides a mock function with given fields: ctx
 // NewPostUsecase creates a new instance of PostUsecase. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
 // The first argument is typically a *testing.T value.
 func NewPostUsecase(t interface {
@@ -145,9 +164,4 @@ func NewPostUsecase(t interface {
 	t.Cleanup(func() { mock.AssertExpectations(t) })
 
 	return mock
-}
-
-func (m *PostUsecase) GetTotalPostsCount(ctx context.Context) (int, error) {
-	args := m.Called(ctx)
-	return args.Int(0), args.Error(1)
 }

@@ -6,16 +6,3 @@ type Post struct {
 	Title    string `json:"title" db:"title" example:"Заголовк"`
 	Content  string `json:"content" db:"content" example:"Текст"`
 }
-
-func (p *Post) Validate() error {
-	if p.AuthorId <= 0 {
-		return ErrInvalidAuthorID
-	}
-	if p.Title == "" {
-		return ErrEmptyTitle
-	}
-	if p.Content == "" {
-		return ErrEmptyContent
-	}
-	return nil
-}

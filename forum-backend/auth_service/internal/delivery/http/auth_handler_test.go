@@ -4,11 +4,11 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	utils "github.com/miqxzz/commonmiqx"
+	utils "github.com/Engls/EnglsJwt"
 	"github.com/Engls/forum-project2/auth_service/internal/entity"
 	"net/http"
 	"net/http/httptest"
-	"testing" 
+	"testing"
 
 	_ "github.com/Engls/forum-project2/auth_service/internal/usecase"
 	"github.com/Engls/forum-project2/auth_service/mocks"

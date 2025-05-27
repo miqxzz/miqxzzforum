@@ -3,106 +3,72 @@ import axios from 'axios';
 import styled from 'styled-components';
 
 const CommentListContainer = styled.div`
-    margin-top: 18px;
-    padding: 14px 10px 10px 10px;
-    border-radius: 10px;
-    background-color: #f6f2fa;
-    box-shadow: 0 1px 3px rgba(162, 89, 255, 0.06);
-    border: 1.2px solid rgba(162, 89, 255, 0.18);
-    max-width: 600px;
-    margin-left: auto;
-    margin-right: auto;
+    margin-top: 15px;
+    padding: 10px;
+    border-radius: 8px;
+    background-color: #f8f8f8;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 `;
 
 const CommentItem = styled.div`
-    padding: 10px 8px 8px 8px;
-    margin-bottom: 10px;
-    border-bottom: 1px solid #e0c3fc;
-    font-family: 'Montserrat', Arial, sans-serif;
+    padding: 8px;
+    margin-bottom: 8px;
+    border-bottom: 1px solid #eee;
     &:last-child {
         border-bottom: none;
     }
 `;
 
 const CommentContent = styled.p`
-    font-size: 15px;
-    color: #6c2eb7;
-    margin-bottom: 4px;
-    font-family: 'Montserrat', Arial, sans-serif;
+    font-size: 14px;
+    color: #333;
+    margin-bottom: 5px;
 `;
 
 const CommentAuthor = styled.small`
-    color: #a259ff;
+    color: #777;
     font-style: italic;
-    font-family: 'Montserrat', Arial, sans-serif;
 `;
 
 const LoadingMessage = styled.p`
-    color: #a259ff;
+    color: #555;
     font-style: italic;
-    font-family: 'Montserrat', Arial, sans-serif;
 `;
 
 const ErrorMessage = styled.p`
     color: #d32f2f;
-    text-align: center;
-    font-family: 'Montserrat', Arial, sans-serif;
 `;
 
 const NoCommentsMessage = styled.p`
-    color: #bfa6e6;
+    color: #999;
     font-style: italic;
-    font-family: 'Montserrat', Arial, sans-serif;
 `;
 
 const PaginationContainer = styled.div`
     display: flex;
     justify-content: center;
-    align-items: center;
-    margin-top: 10px;
+    margin-top: 15px;
     gap: 10px;
-    flex-wrap: wrap;
-    width: 100%;
 `;
 
 const PaginationButton = styled.button`
-    padding: 6px 12px;
+    padding: 5px 10px;
     cursor: pointer;
-    background-color: ${props => props.active ? '#a259ff' : 'transparent'};
-    color: ${props => props.active ? '#fff' : '#a259ff'};
-    border: 1.2px solid #a259ff;
-    border-radius: 5px;
-    transition: background 0.2s, color 0.2s;
-    font-family: 'Montserrat', Arial, sans-serif;
-    font-size: 13px;
-    min-width: 70px;
+    background-color: ${props => props.active ? '#2196F3' : '#f5f5f5'};
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    
     &:disabled {
         opacity: 0.5;
         cursor: not-allowed;
-        background: #f9f9ff;
-        color: #bfa6e6;
-        border: 1.2px solid #e0c3fc;
     }
 `;
 
 const PageSizeSelect = styled.select`
-    padding: 6px 8px;
-    border-radius: 5px;
-    border: 2px solid #a259ff;
-    color: #a259ff;
-    background: #f9f9ff;
-    font-family: 'Montserrat', Arial, sans-serif;
-    font-size: 13px;
-    margin-left: 8px;
-    outline: none;
-`;
-
-const PaginationInfo = styled.span`
-    min-width: 110px;
-    text-align: center;
-    font-family: 'Montserrat', Arial, sans-serif;
-    font-size: 15px;
-    color: #222;
+    padding: 5px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+    margin-left: 10px;
 `;
 
 const CommentList = ({ postId }) => {
@@ -128,7 +94,7 @@ const CommentList = ({ postId }) => {
 
         // Отменяем предыдущий запрос, если он существует
         if (cancelTokenSource.current) {
-            cancelTokenSource.current.cancel('Запрос отменен из-за нового запроса');
+            cancelTokenSource.current.cancel('Request canceled due to new request');
         }
         
         // Создаем новый токен отмены
@@ -153,7 +119,7 @@ const CommentList = ({ postId }) => {
             }));
         } catch (error) {
             if (!axios.isCancel(error)) {
-                console.error('Ошибка при получении комментариев:', error);
+                console.error('Error fetching comments:', error);
                 setError(error);
             }
         } finally {
@@ -174,7 +140,7 @@ const CommentList = ({ postId }) => {
         return () => {
             clearInterval(refreshInterval.current);
             if (cancelTokenSource.current) {
-                cancelTokenSource.current.cancel('Компонент размонтирован');
+                cancelTokenSource.current.cancel('Component unmounted');
             }
         };
     }, [postId, pagination.page, pagination.limit]);
@@ -194,21 +160,21 @@ const CommentList = ({ postId }) => {
         });
     };
 
-    if (loading) return <LoadingMessage>Загрузка комментариев...</LoadingMessage>;
-    if (error) return <ErrorMessage>Ошибка: {error.message} {error.response?.status && `(Статус: ${error.response.status})`}</ErrorMessage>;
+    if (loading) return <LoadingMessage>Loading comments...</LoadingMessage>;
+    if (error) return <ErrorMessage>Error: {error.message} {error.response?.status && `(Status: ${error.response.status})`}</ErrorMessage>;
 
     const totalPages = Math.ceil(pagination.total / pagination.limit);
 
     return (
         <CommentListContainer>
-            <h4>Комментарии ({pagination.total}):</h4>
+            <h4>Comments ({pagination.total}):</h4>
             
             {comments.length ? (
                 <>
                     {comments.map(comment => (
                         <CommentItem key={comment.id}>
                             <CommentContent>{comment.content}</CommentContent>
-                            <CommentAuthor>От {comment.username || `User ID: ${comment.author_id}`}</CommentAuthor>
+                            <CommentAuthor>By {comment.username || `User ID: ${comment.author_id}`}</CommentAuthor>
                         </CommentItem>
                     ))}
                     
@@ -217,37 +183,44 @@ const CommentList = ({ postId }) => {
                             onClick={() => handlePageChange(1)}
                             disabled={pagination.page <= 1}
                         >
-                            Первая
+                            First
                         </PaginationButton>
                         
                         <PaginationButton
                             onClick={() => handlePageChange(pagination.page - 1)}
                             disabled={pagination.page <= 1}
                         >
-                            Предыдущая
+                            Previous
+                        </PaginationButton>
+                        
+                        <span>Page {pagination.page} of {totalPages}</span>
+                        
+                        <PaginationButton
+                            onClick={() => handlePageChange(pagination.page + 1)}
+                            disabled={pagination.page >= totalPages}
+                        >
+                            Next
                         </PaginationButton>
                         
                         <PaginationButton
                             onClick={() => handlePageChange(totalPages)}
                             disabled={pagination.page >= totalPages}
                         >
-                            Последняя
+                            Last
                         </PaginationButton>
                         
                         <PageSizeSelect 
                             value={pagination.limit} 
                             onChange={handleLimitChange}
                         >
-                            <option value={3}>3 на странице</option>
-                            <option value={5}>5 на странице</option>
-                            <option value={10}>10 на странице</option>
+                            <option value={3}>3 per page</option>
+                            <option value={5}>5 per page</option>
+                            <option value={10}>10 per page</option>
                         </PageSizeSelect>
-                        
-                        <PaginationInfo>Страница {pagination.page} из {totalPages}</PaginationInfo>
                     </PaginationContainer>
                 </>
             ) : (
-                <NoCommentsMessage>Нет комментариев.</NoCommentsMessage>
+                <NoCommentsMessage>No comments yet.</NoCommentsMessage>
             )}
         </CommentListContainer>
     );

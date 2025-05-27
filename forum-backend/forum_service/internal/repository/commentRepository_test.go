@@ -2,164 +2,135 @@ package repository
 
 import (
 	"context"
+	"errors"
+	"github.com/Engls/forum-project2/forum_service/internal/repository/adapters"
 	"testing"
 	"time"
 
 	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/miqxzz/miqxzzforum/forum_service/internal/entity"
-	"github.com/miqxzz/miqxzzforum/forum_service/internal/repository/adapters"
+	"github.com/Engls/forum-project2/forum_service/internal/entity"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
 )
 
 func TestCommentsRepository_CreateComment_Success(t *testing.T) {
-	logger, _ := zap.NewProduction()
-	db, mock, err := sqlmock.New()
-	require.NoError(t, err)
-	defer db.Close()
 
-	dbAdapter := &adapters.DbAdapter{DB: db}
-	repo := NewCommentsRepository(dbAdapter, logger)
+	logger, _ := zap.NewProduction()
+
+	db, mock, err := sqlmock.New()
+	assert.NoError(t, err)
+	defer db.Close()
+	dbAdapter := adapters.DbAdapter{db}
+
+	commentsRepo := NewCommentsRepository(&dbAdapter, logger)
 
 	comment := entity.Comment{
 		PostId:   1,
 		AuthorId: 1,
-		Content:  "Test comment",
+		Content:  "This is a test comment",
 	}
+	createdComment := comment
+	createdComment.ID = 1
+	createdComment.CreatedAt = time.Now()
 
-	rows := sqlmock.NewRows([]string{"id", "created_at"}).
-		AddRow(1, time.Now())
+	mock.ExpectQuery(`INSERT INTO comments \(post_id, author_id, content\) VALUES \(\$1, \$2, \$3\) RETURNING id, created_at`).
+		WithArgs(comment.PostId, comment.AuthorId, comment.Content).
+		WillReturnRows(sqlmock.NewRows([]string{"id", "created_at"}).AddRow(createdComment.ID, createdComment.CreatedAt))
 
-	mock.ExpectQuery("INSERT INTO comments").
-		WithArgs(1, 1, "Test comment").
-		WillReturnRows(rows)
+	result, err := commentsRepo.CreateComment(context.Background(), comment)
 
-	createdComment, err := repo.CreateComment(context.Background(), comment)
 	assert.NoError(t, err)
-	assert.Equal(t, 1, createdComment.ID)
-	assert.Equal(t, 1, createdComment.AuthorId)
-	assert.Equal(t, 1, createdComment.PostId)
-	assert.Equal(t, "Test comment", createdComment.Content)
-	assert.NotZero(t, createdComment.CreatedAt)
+	assert.Equal(t, createdComment, result)
+
+	assert.NoError(t, mock.ExpectationsWereMet())
 }
 
 func TestCommentsRepository_CreateComment_Failure(t *testing.T) {
+
 	logger, _ := zap.NewProduction()
+
 	db, mock, err := sqlmock.New()
-	require.NoError(t, err)
+	assert.NoError(t, err)
 	defer db.Close()
 
-	dbAdapter := &adapters.DbAdapter{DB: db}
-	repo := NewCommentsRepository(dbAdapter, logger)
+	dbAdapter := adapters.DbAdapter{db}
+
+	commentsRepo := NewCommentsRepository(&dbAdapter, logger)
 
 	comment := entity.Comment{
 		PostId:   1,
 		AuthorId: 1,
-		Content:  "Test comment",
+		Content:  "This is a test comment",
 	}
 
-	mock.ExpectQuery("INSERT INTO comments").
-		WithArgs(1, 1, "Test comment").
-		WillReturnError(assert.AnError)
+	mock.ExpectQuery(`INSERT INTO comments \(post_id, author_id, content\) VALUES \(\$1, \$2, \$3\) RETURNING id, created_at`).
+		WithArgs(comment.PostId, comment.AuthorId, comment.Content).
+		WillReturnError(errors.New("failed to create comment"))
 
-	createdComment, err := repo.CreateComment(context.Background(), comment)
+	result, err := commentsRepo.CreateComment(context.Background(), comment)
+
 	assert.Error(t, err)
-	assert.Equal(t, entity.Comment{}, createdComment)
+	assert.Equal(t, entity.Comment{}, result)
+
+	assert.NoError(t, mock.ExpectationsWereMet())
 }
 
-func TestCommentsRepository_GetComments_Success(t *testing.T) {
+func TestCommentsRepository_GetCommentsByPostID_Success(t *testing.T) {
+
 	logger, _ := zap.NewProduction()
+
 	db, mock, err := sqlmock.New()
-	require.NoError(t, err)
+	assert.NoError(t, err)
 	defer db.Close()
 
-	dbAdapter := &adapters.DbAdapter{DB: db}
-	repo := NewCommentsRepository(dbAdapter, logger)
+	dbAdapter := adapters.DbAdapter{db}
 
-	expectedComments := []entity.Comment{
-		{
-			ID:        1,
-			AuthorId:  1,
-			PostId:    1,
-			Content:   "Comment 1",
-			CreatedAt: time.Now(),
-		},
-		{
-			ID:        2,
-			AuthorId:  2,
-			PostId:    1,
-			Content:   "Comment 2",
-			CreatedAt: time.Now(),
-		},
+	commentsRepo := NewCommentsRepository(&dbAdapter, logger)
+
+	postID := 1
+	comments := []entity.Comment{
+		{ID: 1, PostId: postID, AuthorId: 1, Content: "Comment 1", CreatedAt: time.Now()},
+		{ID: 2, PostId: postID, AuthorId: 2, Content: "Comment 2", CreatedAt: time.Now()},
 	}
 
-	rows := sqlmock.NewRows([]string{"id", "author_id", "post_id", "content", "created_at"}).
-		AddRow(expectedComments[0].ID, expectedComments[0].AuthorId, expectedComments[0].PostId, expectedComments[0].Content, expectedComments[0].CreatedAt).
-		AddRow(expectedComments[1].ID, expectedComments[1].AuthorId, expectedComments[1].PostId, expectedComments[1].Content, expectedComments[1].CreatedAt)
-
-	mock.ExpectQuery("SELECT id, author_id, post_id, content, created_at FROM comments").
-		WithArgs(1, 10, 0).
+	rows := sqlmock.NewRows([]string{"id", "post_id", "author_id", "content", "created_at"})
+	for _, comment := range comments {
+		rows.AddRow(comment.ID, comment.PostId, comment.AuthorId, comment.Content, comment.CreatedAt)
+	}
+	mock.ExpectQuery(`SELECT id, post_id, author_id, content, created_at FROM comments WHERE post_id = \$1 ORDER BY created_at ASC`).
+		WithArgs(postID).
 		WillReturnRows(rows)
 
-	comments, err := repo.GetComments(context.Background(), 1, 10, 0)
+	result, err := commentsRepo.GetCommentsByPostID(context.Background(), postID)
+
 	assert.NoError(t, err)
-	assert.Equal(t, expectedComments, comments)
+	assert.Equal(t, comments, result)
+
+	assert.NoError(t, mock.ExpectationsWereMet())
 }
 
-func TestCommentsRepository_GetComments_Failure(t *testing.T) {
+func TestCommentsRepository_GetCommentsByPostID_Failure(t *testing.T) {
+
 	logger, _ := zap.NewProduction()
+
 	db, mock, err := sqlmock.New()
-	require.NoError(t, err)
-	defer db.Close()
-
-	dbAdapter := &adapters.DbAdapter{DB: db}
-	repo := NewCommentsRepository(dbAdapter, logger)
-
-	mock.ExpectQuery("SELECT id, author_id, post_id, content, created_at FROM comments").
-		WithArgs(1, 10, 0).
-		WillReturnError(assert.AnError)
-
-	comments, err := repo.GetComments(context.Background(), 1, 10, 0)
-	assert.Error(t, err)
-	assert.Nil(t, comments)
-}
-
-func TestCommentsRepository_GetTotalCommentsCount_Success(t *testing.T) {
-	logger, _ := zap.NewProduction()
-	db, mock, err := sqlmock.New()
-	require.NoError(t, err)
-	defer db.Close()
-
-	dbAdapter := &adapters.DbAdapter{DB: db}
-	repo := NewCommentsRepository(dbAdapter, logger)
-
-	rows := sqlmock.NewRows([]string{"count"}).
-		AddRow(5)
-
-	mock.ExpectQuery("SELECT COUNT").
-		WithArgs(1).
-		WillReturnRows(rows)
-
-	count, err := repo.GetTotalCommentsCount(context.Background(), 1)
 	assert.NoError(t, err)
-	assert.Equal(t, 5, count)
-}
-
-func TestCommentsRepository_GetTotalCommentsCount_Failure(t *testing.T) {
-	logger, _ := zap.NewProduction()
-	db, mock, err := sqlmock.New()
-	require.NoError(t, err)
 	defer db.Close()
 
-	dbAdapter := &adapters.DbAdapter{DB: db}
-	repo := NewCommentsRepository(dbAdapter, logger)
+	dbAdapter := adapters.DbAdapter{db}
 
-	mock.ExpectQuery("SELECT COUNT").
-		WithArgs(1).
-		WillReturnError(assert.AnError)
+	commentsRepo := NewCommentsRepository(&dbAdapter, logger)
 
-	count, err := repo.GetTotalCommentsCount(context.Background(), 1)
+	postID := 1
+
+	mock.ExpectQuery(`SELECT id, post_id, author_id, content, created_at FROM comments WHERE post_id = \$1 ORDER BY created_at ASC`).
+		WithArgs(postID).
+		WillReturnError(errors.New("failed to get comments"))
+
+	result, err := commentsRepo.GetCommentsByPostID(context.Background(), postID)
+
 	assert.Error(t, err)
-	assert.Equal(t, 0, count)
+	assert.Nil(t, result)
+
+	assert.NoError(t, mock.ExpectationsWereMet())
 }

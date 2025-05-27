@@ -9,16 +9,3 @@ type Comment struct {
 	Content   string    `json:"content" db:"content" exmaple:"текст комментария"`
 	CreatedAt time.Time `json:"created_at" exmaple:"22:00"`
 }
-
-func (c *Comment) Validate() error {
-	if c.AuthorId <= 0 {
-		return ErrInvalidAuthorID
-	}
-	if c.PostId <= 0 {
-		return ErrInvalidPostID
-	}
-	if c.Content == "" {
-		return ErrEmptyContent
-	}
-	return nil
-}

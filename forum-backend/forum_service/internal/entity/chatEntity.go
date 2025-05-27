@@ -9,16 +9,3 @@ type ChatMessage struct {
 	Content   string    `json:"content" db:"content"`
 	Timestamp time.Time `json:"timestamp" db:"timestamp"`
 }
-
-func (m *ChatMessage) Validate() error {
-	if m.UserID <= 0 {
-		return ErrInvalidUserID
-	}
-	if m.Username == "" {
-		return ErrEmptyUsername
-	}
-	if m.Content == "" {
-		return ErrEmptyContent
-	}
-	return nil
-}

@@ -1,30 +1,35 @@
 package main
 
 import (
-	"log"
-	"time"
-
+	utils "github.com/Engls/EnglsJwt"
+	_ "github.com/Engls/forum-project2/forum_service/docs"
+	"github.com/Engls/forum-project2/forum_service/internal/config"
+	"github.com/Engls/forum-project2/forum_service/internal/controllers/chat"
+	"github.com/Engls/forum-project2/forum_service/internal/controllers/grpc"
+	"github.com/Engls/forum-project2/forum_service/internal/controllers/http"
+	"github.com/Engls/forum-project2/forum_service/internal/repository"
+	"github.com/Engls/forum-project2/forum_service/internal/usecase"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/mattn/go-sqlite3"
-	utils "github.com/miqxzz/commonmiqx"
-	_ "github.com/miqxzz/miqxzzforum/forum_service/docs"
-	"github.com/miqxzz/miqxzzforum/forum_service/internal/config"
-	"github.com/miqxzz/miqxzzforum/forum_service/internal/controllers/chat"
-	"github.com/miqxzz/miqxzzforum/forum_service/internal/controllers/grpc"
-	"github.com/miqxzz/miqxzzforum/forum_service/internal/controllers/http"
-	"github.com/miqxzz/miqxzzforum/forum_service/internal/repository"
-	"github.com/miqxzz/miqxzzforum/forum_service/internal/usecase"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"go.uber.org/zap"
+	"log"
+	"time"
 )
 
+// @title Forum Service API
+// @version 1.2
+// @description This is the API documentation for the Auth Service.
+// @host localhost:8081
+// @BasePath /
 func main() {
 
-	logger, _ := zap.NewProduction()
+	utils.InitLogger()
+	logger := utils.GetLogger()
 
 	cfg, err := config.LoadConfig()
 	if err != nil {

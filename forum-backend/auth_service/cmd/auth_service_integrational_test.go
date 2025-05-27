@@ -3,21 +3,20 @@ package main
 import (
 	"bytes"
 	"encoding/json"
+	"github.com/Engls/EnglsJwt"
+	http2 "github.com/Engls/forum-project2/auth_service/internal/delivery/http"
+	"github.com/Engls/forum-project2/auth_service/internal/entity"
+	"github.com/Engls/forum-project2/auth_service/internal/repository"
+	"github.com/Engls/forum-project2/auth_service/internal/usecase"
+	"github.com/gin-gonic/gin"
+	"github.com/jmoiron/sqlx"
+	_ "github.com/mattn/go-sqlite3"
+	"github.com/stretchr/testify/assert"
+	"go.uber.org/zap"
 	"net/http"
 	"net/http/httptest"
 	"os"
 	"testing"
-
-	"github.com/gin-gonic/gin"
-	"github.com/jmoiron/sqlx"
-	_ "github.com/mattn/go-sqlite3"
-	commonmiqx "github.com/miqxzz/commonmiqx"
-	http2 "github.com/miqxzz/miqxzzforum/auth_service/internal/delivery/http"
-	"github.com/miqxzz/miqxzzforum/auth_service/internal/entity"
-	"github.com/miqxzz/miqxzzforum/auth_service/internal/repository"
-	"github.com/miqxzz/miqxzzforum/auth_service/internal/usecase"
-	"github.com/stretchr/testify/assert"
-	"go.uber.org/zap"
 )
 
 func setupTestDB(t *testing.T) *sqlx.DB {
@@ -61,7 +60,7 @@ func TestAuthService_Integration(t *testing.T) {
 	defer db.Close()
 
 	authRepo := repository.NewAuthRepository(db, logger)
-	jwtUtil := commonmiqx.NewJWTUtil("secret")
+	jwtUtil := EnglsJwt.NewJWTUtil("secret")
 	authUsecase := usecase.NewAuthUsecase(authRepo, jwtUtil, logger)
 	authHandler := http2.NewAuthHandler(authUsecase, jwtUtil, logger)
 

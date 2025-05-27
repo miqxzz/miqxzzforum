@@ -5,7 +5,7 @@ package mocks
 import (
 	context "context"
 
-	entity "github.com/miqxzz/miqxzzforum/forum_service/internal/entity"
+	entity "github.com/Engls/forum-project2/forum_service/internal/entity"
 	mock "github.com/stretchr/testify/mock"
 )
 
@@ -42,20 +42,34 @@ func (_m *CommentsUsecases) CreateComment(ctx context.Context, comment entity.Co
 	return r0, r1
 }
 
-// GetComments provides a mock function with given fields: ctx, postID, limit, offset
-func (m *CommentsUsecases) GetComments(ctx context.Context, postID, limit, offset int) ([]entity.Comment, error) {
-	args := m.Called(ctx, postID, limit, offset)
-	var r0 []entity.Comment
-	if args.Get(0) != nil {
-		r0 = args.Get(0).([]entity.Comment)
-	}
-	return r0, args.Error(1)
-}
+// GetCommentByPostID provides a mock function with given fields: ctx, postId
+func (_m *CommentsUsecases) GetCommentByPostID(ctx context.Context, postId int) ([]entity.Comment, error) {
+	ret := _m.Called(ctx, postId)
 
-// GetTotalCommentsCount provides a mock function with given fields: ctx, postID
-func (m *CommentsUsecases) GetTotalCommentsCount(ctx context.Context, postID int) (int, error) {
-	args := m.Called(ctx, postID)
-	return args.Int(0), args.Error(1)
+	if len(ret) == 0 {
+		panic("no return value specified for GetCommentByPostID")
+	}
+
+	var r0 []entity.Comment
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, int) ([]entity.Comment, error)); ok {
+		return rf(ctx, postId)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, int) []entity.Comment); ok {
+		r0 = rf(ctx, postId)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]entity.Comment)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, int) error); ok {
+		r1 = rf(ctx, postId)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
 }
 
 // NewCommentsUsecases creates a new instance of CommentsUsecases. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.

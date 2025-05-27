@@ -4,9 +4,9 @@ import (
 	"errors"
 	"testing"
 
+	"github.com/Engls/EnglsJwt"
 	"github.com/Engls/forum-project2/auth_service/internal/entity"
 	"github.com/Engls/forum-project2/auth_service/mocks"
-	commonmiqx "github.com/miqxzz/commonmiqx"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"go.uber.org/zap"
@@ -18,7 +18,7 @@ func TestAuthUsecase_Register_Success(t *testing.T) {
 	logger, _ := zap.NewProduction()
 
 	mockAuthRepo := new(mocks.AuthRepository)
-	jwtUtil := commonmiqx.NewJWTUtil("secret")
+	jwtUtil := EnglsJwt.NewJWTUtil("secret")
 
 	username := "testuser"
 	password := "password"
@@ -40,7 +40,7 @@ func TestAuthUsecase_Register_Failure(t *testing.T) {
 	logger, _ := zap.NewProduction()
 
 	mockAuthRepo := new(mocks.AuthRepository)
-	jwtUtil := commonmiqx.NewJWTUtil("secret")
+	jwtUtil := EnglsJwt.NewJWTUtil("secret")
 
 	username := "testuser"
 	password := "password"
@@ -62,7 +62,7 @@ func TestAuthUsecase_Login_Success(t *testing.T) {
 	logger, _ := zap.NewProduction()
 
 	mockAuthRepo := new(mocks.AuthRepository)
-	jwtUtil := commonmiqx.NewJWTUtil("secret")
+	jwtUtil := EnglsJwt.NewJWTUtil("secret")
 
 	username := "testuser"
 	password := "password"
@@ -87,7 +87,7 @@ func TestAuthUsecase_Login_Failure_InvalidCredentials(t *testing.T) {
 	logger, _ := zap.NewProduction()
 
 	mockAuthRepo := new(mocks.AuthRepository)
-	jwtUtil := commonmiqx.NewJWTUtil("secret")
+	jwtUtil := EnglsJwt.NewJWTUtil("secret")
 
 	username := "testuser"
 	password := "password"
@@ -109,7 +109,7 @@ func TestAuthUsecase_Login_Failure_InvalidPassword(t *testing.T) {
 	logger, _ := zap.NewProduction()
 
 	mockAuthRepo := new(mocks.AuthRepository)
-	jwtUtil := commonmiqx.NewJWTUtil("secret")
+	jwtUtil := EnglsJwt.NewJWTUtil("secret")
 
 	username := "testuser"
 	password := "password"
@@ -133,7 +133,7 @@ func TestAuthUsecase_GetUserRole_Success(t *testing.T) {
 	logger, _ := zap.NewProduction()
 
 	mockAuthRepo := new(mocks.AuthRepository)
-	jwtUtil := commonmiqx.NewJWTUtil("secret")
+	jwtUtil := EnglsJwt.NewJWTUtil("secret")
 
 	username := "testuser"
 	user := entity.User{ID: 1, Username: username, Password: "hashedpassword", Role: "user"}
@@ -155,7 +155,7 @@ func TestAuthUsecase_GetUserRole_Failure(t *testing.T) {
 	logger, _ := zap.NewProduction()
 
 	mockAuthRepo := new(mocks.AuthRepository)
-	jwtUtil := commonmiqx.NewJWTUtil("secret")
+	jwtUtil := EnglsJwt.NewJWTUtil("secret")
 
 	username := "testuser"
 

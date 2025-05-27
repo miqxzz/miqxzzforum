@@ -7,13 +7,18 @@ import (
 	"net/http/httptest"
 	"os"
 	"testing"
+	"time"
 
+	"github.com/Engls/EnglsJwt"
+	"github.com/Engls/forum-project2/forum_service/internal/controllers/chat"
+	http2 "github.com/Engls/forum-project2/forum_service/internal/controllers/http"
+	"github.com/Engls/forum-project2/forum_service/internal/entity"
+	"github.com/Engls/forum-project2/forum_service/internal/repository"
+	"github.com/Engls/forum-project2/forum_service/internal/usecase"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/mattn/go-sqlite3"
-	"github.com/miqxzz/miqxzzforum/forum_service/internal/entity"
-	"github.com/miqxzz/miqxzzforum/forum_service/internal/repository"
-	"github.com/miqxzz/miqxzzforum/forum_service/internal/usecase"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/zap"
 )
@@ -78,96 +83,75 @@ func setupTestDB(t *testing.T) *sqlx.DB {
 	return db
 }
 
-func setupRouter() *gin.Engine {
-	db := setupTestDB(nil)
-	logger, _ := zap.NewProduction()
-	router := gin.New()
+func TestForumService_Integration(t *testing.T) {
 
-	// Инициализация репозиториев и usecases
+	logger, _ := zap.NewProduction()
+
+	db := setupTestDB(t)
+	defer db.Close()
+
 	postRepo := repository.NewPostRepository(db, logger)
 	commentRepo := repository.NewCommentsRepository(db, logger)
+	chatRepo := repository.NewChatRepository(db, logger)
 	postUsecase := usecase.NewPostUsecase(postRepo, logger)
+	commentUsecase := usecase.NewCommentsUsecases(commentRepo, logger)
+	hub := chat.NewHub()
+	chatUsecase := usecase.NewChatUsecase(chatRepo, logger)
+	jwtUtil := EnglsJwt.NewJWTUtil("secret")
 
-	// Регистрация маршрутов
-	router.POST("/posts", func(c *gin.Context) {
-		var post entity.Post
-		if err := c.ShouldBindJSON(&post); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-			return
-		}
-		result, err := postUsecase.CreatePost(c.Request.Context(), post)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			return
-		}
-		c.JSON(http.StatusCreated, result)
-	})
+	postHandler := http2.NewPostHandler(postUsecase, postRepo, jwtUtil, logger)
+	commentHandler := http2.NewCommentHandler(commentUsecase, jwtUtil, logger)
+	chatHandler := http2.NewChatHandler(hub, chatUsecase, jwtUtil, logger)
 
-	router.GET("/posts", func(c *gin.Context) {
-		limit := 10
-		offset := 0
-		posts, err := postUsecase.GetPosts(c.Request.Context(), limit, offset)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			return
-		}
-		c.JSON(http.StatusOK, posts)
-	})
+	router := gin.Default()
+	router.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"http://localhost:3000"},
+		AllowMethods:     []string{"PUT", "PATCH", "POST", "GET", "DELETE"},
+		AllowHeaders:     []string{"Content-type", "Origin", "Authorization"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+		MaxAge:           12 * time.Hour,
+	}))
 
-	router.POST("/posts/:id/comments", func(c *gin.Context) {
-		var comment entity.Comment
-		if err := c.ShouldBindJSON(&comment); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-			return
-		}
-		comment.PostId = 1 // Для тестов
-		result, err := commentRepo.CreateComment(c.Request.Context(), comment)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			return
-		}
-		c.JSON(http.StatusCreated, result)
-	})
+	router.GET("/ws", chatHandler.ServeWS)
+	router.POST("/posts", postHandler.CreatePost)
+	router.GET("/posts", postHandler.GetPosts)
+	router.DELETE("/posts/:id", postHandler.DeletePost)
+	router.POST("/posts/:id/comments", commentHandler.CreateComment)
+	router.GET("/posts/:id/comments", commentHandler.GetCommentsByPostID)
 
-	router.GET("/posts/:id/comments", func(c *gin.Context) {
-		comments, err := commentRepo.GetComments(c.Request.Context(), 1, 10, 0)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			return
-		}
-		c.JSON(http.StatusOK, comments)
-	})
+	token, err := jwtUtil.GenerateToken(1, "user")
+	if err != nil {
+		t.Fatalf("Failed to generate token: %s", err)
+	}
 
-	return router
-}
-
-func TestForumService_Integration(t *testing.T) {
-	gin.SetMode(gin.TestMode)
-	router := setupRouter()
+	_, err = db.Exec("INSERT INTO tokens (user_id, token) VALUES (?, ?)", 1, token)
+	if err != nil {
+		t.Fatalf("Failed to save token: %s", err)
+	}
 
 	t.Run("CreatePost", func(t *testing.T) {
-		post := entity.Post{
+		reqBody := entity.Post{
 			AuthorId: 1,
 			Title:    "Test Post",
 			Content:  "This is a test post",
 		}
-
-		body, _ := json.Marshal(post)
-		req := httptest.NewRequest(http.MethodPost, "/posts", bytes.NewBuffer(body))
-		req.Header.Set("Authorization", "Bearer test-token")
+		reqBodyBytes, _ := json.Marshal(reqBody)
 
 		w := httptest.NewRecorder()
+		req, _ := http.NewRequest(http.MethodPost, "/posts", bytes.NewBuffer(reqBodyBytes))
+		req.Header.Set("Content-Type", "application/json")
+		req.Header.Set("Authorization", "Bearer "+token)
 		router.ServeHTTP(w, req)
 
 		assert.Equal(t, http.StatusCreated, w.Code)
-		assert.Contains(t, w.Body.String(), "Test Post")
+		assert.Contains(t, w.Body.String(), "This is a test post")
 	})
 
 	t.Run("GetPosts", func(t *testing.T) {
-		req := httptest.NewRequest(http.MethodGet, "/posts", nil)
-		req.Header.Set("Authorization", "Bearer test-token")
-
 		w := httptest.NewRecorder()
+		req, _ := http.NewRequest(http.MethodGet, "/posts", nil)
+		req.Header.Set("Authorization", "Bearer "+token)
 		router.ServeHTTP(w, req)
 
 		assert.Equal(t, http.StatusOK, w.Code)
@@ -175,17 +159,17 @@ func TestForumService_Integration(t *testing.T) {
 	})
 
 	t.Run("CreateComment", func(t *testing.T) {
-		comment := entity.Comment{
-			AuthorId: 1,
+		reqBody := entity.Comment{
 			PostId:   1,
+			AuthorId: 1,
 			Content:  "This is a test comment",
 		}
-
-		body, _ := json.Marshal(comment)
-		req := httptest.NewRequest(http.MethodPost, "/posts/1/comments", bytes.NewBuffer(body))
-		req.Header.Set("Authorization", "Bearer test-token")
+		reqBodyBytes, _ := json.Marshal(reqBody)
 
 		w := httptest.NewRecorder()
+		req, _ := http.NewRequest(http.MethodPost, "/posts/1/comments", bytes.NewBuffer(reqBodyBytes))
+		req.Header.Set("Content-Type", "application/json")
+		req.Header.Set("Authorization", "Bearer "+token)
 		router.ServeHTTP(w, req)
 
 		assert.Equal(t, http.StatusCreated, w.Code)
@@ -193,10 +177,9 @@ func TestForumService_Integration(t *testing.T) {
 	})
 
 	t.Run("GetCommentsByPostID", func(t *testing.T) {
-		req := httptest.NewRequest(http.MethodGet, "/posts/1/comments", nil)
-		req.Header.Set("Authorization", "Bearer test-token")
-
 		w := httptest.NewRecorder()
+		req, _ := http.NewRequest(http.MethodGet, "/posts/1/comments", nil)
+		req.Header.Set("Authorization", "Bearer "+token)
 		router.ServeHTTP(w, req)
 
 		assert.Equal(t, http.StatusOK, w.Code)

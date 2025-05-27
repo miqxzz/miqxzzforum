@@ -1,6 +1,6 @@
 body {
-  font-family: 'Montserrat', Arial, sans-serif;
-  background-color: #e0c3fc;
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f4;
   margin: 0;
   padding: 0;
   display: flex;
@@ -13,69 +13,57 @@ body {
   background-color: #fff;
   padding: 20px;
   border-radius: 8px;
-  box-shadow: 0 0 10px rgba(162, 89, 255, 0.1);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   text-align: center;
-  border: 1px solid #a259ff;
-  font-family: 'Montserrat', Arial, sans-serif;
 }
 
 h1 {
   margin-bottom: 20px;
-  color: #a259ff;
-  font-family: 'Montserrat', Arial, sans-serif;
 }
 
 form {
   display: flex;
   flex-direction: column;
-  font-family: 'Montserrat', Arial, sans-serif;
 }
 
 label {
   margin-bottom: 5px;
-  color: #6c2eb7;
-  font-family: 'Montserrat', Arial, sans-serif;
 }
 
 input, textarea {
   margin-bottom: 15px;
   padding: 10px;
-  border: 1px solid #a259ff;
+  border: 1px solid #ccc;
   border-radius: 4px;
-  font-family: 'Montserrat', Arial, sans-serif;
 }
 
 button {
   padding: 10px;
   border: none;
   border-radius: 4px;
-  background-color: #a259ff;
+  background-color: #007bff;
   color: #fff;
   cursor: pointer;
-  font-family: 'Montserrat', Arial, sans-serif;
 }
 
 button:hover {
-  background-color: #6c2eb7;
+  background-color: #0056b3;
 }
 
 a {
   display: block;
   margin-top: 15px;
-  color: #a259ff;
+  color: #007bff;
   text-decoration: none;
-  font-family: 'Montserrat', Arial, sans-serif;
 }
 
 a:hover {
   text-decoration: underline;
-  color: #6c2eb7;
 }
 
 ul {
   list-style-type: none;
   padding: 0;
-  font-family: 'Montserrat', Arial, sans-serif;
 }
 
 li {
@@ -83,7 +71,5 @@ li {
   margin-bottom: 10px;
   padding: 10px;
   border-radius: 4px;
-  box-shadow: 0 0 5px rgba(162, 89, 255, 0.1);
-  border: 1px solid #e0c3fc;
-  font-family: 'Montserrat', Arial, sans-serif;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
 }

@@ -2,10 +2,9 @@ package usecase
 
 import (
 	"errors"
-
+	utils "github.com/Engls/EnglsJwt"
 	"github.com/Engls/forum-project2/auth_service/internal/entity"
 	"github.com/Engls/forum-project2/auth_service/internal/repository"
-	utils "github.com/miqxzz/commonmiqx"
 	"go.uber.org/zap"
 	"golang.org/x/crypto/bcrypt"
 )

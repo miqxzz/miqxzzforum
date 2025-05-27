@@ -1,11 +1,10 @@
 package http
 
 import (
-	"net/http"
-
+	utils "github.com/Engls/EnglsJwt"
 	"github.com/Engls/forum-project2/auth_service/internal/entity"
 	"github.com/Engls/forum-project2/auth_service/internal/usecase"
-	utils "github.com/miqxzz/commonmiqx"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
@@ -21,6 +20,17 @@ func NewAuthHandler(authUsecase usecase.AuthUsecase, jwtUtil *utils.JWTUtil, log
 	return &AuthHandler{authUsecase: authUsecase, jwtUtil: jwtUtil, logger: logger}
 }
 
+// Register godoc
+// @Summary Регистрация нового пользователя
+// @Description Создает нового пользователя в системе
+// @Tags Аутентификация
+// @Accept json
+// @Produce json
+// @Param request body entity.RegisterRequest true "Данные для регистрации"
+// @Success 200 {object} entity.RegisterResponse
+// @Failure 400 {object} entity.ErrorResponse
+// @Failure 500 {object} entity.ErrorResponse
+// @Router /auth/register [post]
 func (h *AuthHandler) Register(c *gin.Context) {
 	var req entity.RegisterRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -37,6 +47,18 @@ func (h *AuthHandler) Register(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "User registered successfully"})
 }
 
+// Login godoc
+// @Summary Аутентификация пользователя
+// @Description Вход пользователя в систему и получение токена
+// @Tags Аутентификация
+// @Accept json
+// @Produce json
+// @Param request body entity.LoginRequest true "Учетные данные пользователя"
+// @Success 200 {object} entity.LoginResponse
+// @Failure 400 {object} entity.ErrorResponse
+// @Failure 401 {object} entity.ErrorResponse
+// @Failure 500 {object} entity.ErrorResponse
+// @Router /auth/login [post]
 func (h *AuthHandler) Login(c *gin.Context) {
 	var req entity.LoginRequest
 	if err := c.ShouldBindJSON(&req); err != nil {

@@ -5,7 +5,7 @@ package mocks
 import (
 	context "context"
 
-	entity "github.com/miqxzz/miqxzzforum/forum_service/internal/entity"
+	entity "github.com/Engls/forum-project2/forum_service/internal/entity"
 	mock "github.com/stretchr/testify/mock"
 )
 
