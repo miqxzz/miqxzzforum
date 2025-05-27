@@ -1,6 +1,9 @@
 package main
 
 import (
+	"log"
+	"time"
+
 	utils "github.com/Engls/EnglsJwt"
 	_ "github.com/Engls/forum-project2/forum_service/docs"
 	"github.com/Engls/forum-project2/forum_service/internal/config"
@@ -17,8 +20,6 @@ import (
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"go.uber.org/zap"
-	"log"
-	"time"
 )
 
 // @title Forum Service API
