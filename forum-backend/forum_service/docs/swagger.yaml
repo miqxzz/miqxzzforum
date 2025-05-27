@@ -1,0 +1,309 @@
+basePath: /
+definitions:
+  entity.Comment:
+    properties:
+      author_id:
+        type: integer
+      content:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: integer
+      post_id:
+        type: integer
+    type: object
+  entity.ErrorResponse:
+    properties:
+      error:
+        example: error message
+        type: string
+    type: object
+  entity.Post:
+    properties:
+      author_id:
+        example: 1
+        type: integer
+      content:
+        example: Текст
+        type: string
+      id:
+        example: 1
+        type: integer
+      title:
+        example: Заголовк
+        type: string
+    type: object
+host: localhost:8081
+info:
+  contact: {}
+  description: This is the API documentation for the Auth Service.
+  title: Forum Service API
+  version: "1.2"
+paths:
+  /posts:
+    get:
+      consumes:
+      - application/json
+      description: Получить посты с юзернеймами
+      parameters:
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: Items per page
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: posts with usernames and total count
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Получить посты
+      tags:
+      - Посты
+    post:
+      consumes:
+      - application/json
+      description: Создает новый пост в системе
+      parameters:
+      - description: Данные поста
+        in: body
+        name: post
+        required: true
+        schema:
+          $ref: '#/definitions/entity.Post'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/entity.Post'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/entity.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/entity.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/entity.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Создать новый пост
+      tags:
+      - Посты
+  /posts/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Удаляет пост по ID (доступно автору или администратору)
+      parameters:
+      - description: ID поста
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/entity.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/entity.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/entity.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/entity.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/entity.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Удалить пост
+      tags:
+      - Посты
+    put:
+      consumes:
+      - application/json
+      description: Редактировать пост(если ты админ или владелец поста)
+      parameters:
+      - description: Post ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Post data
+        in: body
+        name: post
+        required: true
+        schema:
+          $ref: '#/definitions/entity.Post'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.Post'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/entity.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/entity.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/entity.ErrorResponse'
+      summary: Редактировать пост
+      tags:
+      - Посты
+  /posts/{id}/comments:
+    post:
+      consumes:
+      - application/json
+      description: Создает новый комментарий к указанному посту
+      parameters:
+      - description: ID поста
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Данные комментария
+        in: body
+        name: comment
+        required: true
+        schema:
+          $ref: '#/definitions/entity.Comment'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/entity.Comment'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/entity.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/entity.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/entity.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Создать новый комментарий
+      tags:
+      - Комментарии
+  /posts/{post_id}/comments:
+    get:
+      consumes:
+      - application/json
+      description: Получить комментарии
+      parameters:
+      - description: Post ID
+        in: path
+        name: post_id
+        required: true
+        type: integer
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: Items per page
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: comments and pagination info
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Получить комментарии
+      tags:
+      - Комментарии
+  /ws/chat:
+    get:
+      consumes:
+      - application/json
+      description: Обновляет HTTP соединение до WebSocket для обмена сообщениями в
+        реальном времени
+      parameters:
+      - description: JWT токен авторизации
+        in: query
+        name: token
+        required: true
+        type: string
+      - description: ID пользователя
+        in: query
+        name: userID
+        required: true
+        type: integer
+      - description: Имя пользователя
+        in: query
+        name: username
+        type: string
+      - description: Флаг аутентификации
+        in: query
+        name: auth
+        required: true
+        type: boolean
+      produces:
+      - application/json
+      responses:
+        "101":
+          description: Switching Protocols
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/entity.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/entity.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/entity.ErrorResponse'
+      summary: Установить WebSocket соединение для чата
+      tags:
+      - Чат
+swagger: "2.0"

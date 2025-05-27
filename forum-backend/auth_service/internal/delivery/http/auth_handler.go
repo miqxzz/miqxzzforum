@@ -1,0 +1,67 @@
+package http
+
+import (
+	"net/http"
+
+	"github.com/Engls/forum-project2/auth_service/internal/entity"
+	"github.com/Engls/forum-project2/auth_service/internal/usecase"
+	utils "github.com/miqxzz/commonmiqx"
+
+	"github.com/gin-gonic/gin"
+	"go.uber.org/zap"
+)
+
+type AuthHandler struct {
+	authUsecase usecase.AuthUsecase
+	jwtUtil     *utils.JWTUtil
+	logger      *zap.Logger
+}
+
+func NewAuthHandler(authUsecase usecase.AuthUsecase, jwtUtil *utils.JWTUtil, logger *zap.Logger) *AuthHandler {
+	return &AuthHandler{authUsecase: authUsecase, jwtUtil: jwtUtil, logger: logger}
+}
+
+func (h *AuthHandler) Register(c *gin.Context) {
+	var req entity.RegisterRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		h.logger.Error("Failed to bind JSON for registration", zap.Error(err))
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	if err := h.authUsecase.Register(req.Username, req.Password, req.Role); err != nil {
+		h.logger.Error("Failed to register user", zap.Error(err), zap.String("username", req.Username))
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	h.logger.Info("User registered successfully", zap.String("username", req.Username))
+	c.JSON(http.StatusOK, gin.H{"message": "User registered successfully"})
+}
+
+func (h *AuthHandler) Login(c *gin.Context) {
+	var req entity.LoginRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		h.logger.Error("Failed to bind JSON for login", zap.Error(err))
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	token, err := h.authUsecase.Login(req.Username, req.Password)
+	if err != nil {
+		h.logger.Error("Failed to login user", zap.Error(err), zap.String("username", req.Username))
+		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		return
+	}
+	role, err := h.authUsecase.GetUserRole(req.Username)
+	if err != nil {
+		h.logger.Error("Failed to get user role", zap.Error(err), zap.String("username", req.Username))
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	userId, err := h.jwtUtil.GetUserIDFromToken(token)
+	if err != nil {
+		h.logger.Error("Failed to get user ID from token", zap.Error(err), zap.String("username", req.Username))
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	h.logger.Info("User logged in successfully", zap.String("username", req.Username))
+	c.JSON(http.StatusOK, gin.H{"token": token, "role": role, "username": req.Username, "userID": userId})
+}

@@ -1,0 +1,122 @@
+basePath: /
+definitions:
+  entity.ErrorResponse:
+    properties:
+      error:
+        example: error message
+        type: string
+    type: object
+  entity.LoginRequest:
+    properties:
+      password:
+        example: P@ssw0rd
+        type: string
+      username:
+        example: user123
+        type: string
+    type: object
+  entity.LoginResponse:
+    properties:
+      role:
+        example: user
+        type: string
+      token:
+        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        type: string
+      userID:
+        example: 1
+        type: integer
+      username:
+        example: user123
+        type: string
+    type: object
+  entity.RegisterRequest:
+    properties:
+      password:
+        example: P@ssw0rd
+        type: string
+      role:
+        example: user
+        type: string
+      username:
+        example: user123
+        type: string
+    type: object
+  entity.RegisterResponse:
+    properties:
+      message:
+        example: User registered successfully
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: This is the API documentation for the Auth Service.
+  title: Auth Service API
+  version: "1.0"
+paths:
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Вход пользователя в систему и получение токена
+      parameters:
+      - description: Учетные данные пользователя
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/entity.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.LoginResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/entity.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/entity.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/entity.ErrorResponse'
+      summary: Аутентификация пользователя
+      tags:
+      - Аутентификация
+  /auth/register:
+    post:
+      consumes:
+      - application/json
+      description: Создает нового пользователя в системе
+      parameters:
+      - description: Данные для регистрации
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/entity.RegisterRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.RegisterResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/entity.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/entity.ErrorResponse'
+      summary: Регистрация нового пользователя
+      tags:
+      - Аутентификация
+swagger: "2.0"
