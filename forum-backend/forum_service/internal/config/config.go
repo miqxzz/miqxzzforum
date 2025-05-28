@@ -7,10 +7,12 @@ import (
 )
 
 type Config struct {
-	Port           string
-	DBPath         string
-	MigrationsPath string
-	JWTSecret      string
+	Port            string
+	DBPath          string
+	MigrationsPath  string
+	JWTSecret       string
+	HTTPAddr        string
+	AuthServiceAddr string
 }
 
 func LoadConfig() (Config, error) {
@@ -21,10 +23,12 @@ func LoadConfig() (Config, error) {
 	}
 
 	cfg := Config{
-		Port:           getEnv("AUTH_SERVICE_PORT", ":8081"),
-		DBPath:         getEnv("DB_PATH", "../../db/forum.db"),
-		MigrationsPath: getEnv("AUTH_SERVICE_MIGRATIONS_PATH", "C:\\forum-project\\forum-backend\\auth_service\\migrations"),
-		JWTSecret:      getEnv("JWT_SECRET", "your-secret-key"),
+		Port:            getEnv("AUTH_SERVICE_PORT", ":8081"),
+		DBPath:          getEnv("DB_PATH", "../../db/forum.db"),
+		MigrationsPath:  getEnv("AUTH_SERVICE_MIGRATIONS_PATH", "C:\\forum-project\\forum-backend\\auth_service\\migrations"),
+		JWTSecret:       getEnv("JWT_SECRET", "your-secret-key"),
+		HTTPAddr:        getEnv("HTTP_ADDR", ":8080"),
+		AuthServiceAddr: getEnv("AUTH_SERVICE_ADDR", "localhost:50051"),
 	}
 	return cfg, nil
 }

@@ -1,16 +1,17 @@
 package http
 
 import (
-	utils "github.com/Engls/EnglsJwt"
-	"github.com/Engls/forum-project2/forum_service/internal/controllers/grpc"
-	"github.com/Engls/forum-project2/forum_service/internal/entity"
-	"github.com/Engls/forum-project2/forum_service/internal/repository"
-	"github.com/Engls/forum-project2/forum_service/internal/usecase"
-	"github.com/gin-gonic/gin"
-	"go.uber.org/zap"
 	"net/http"
 	"strconv"
 	"strings"
+
+	"github.com/gin-gonic/gin"
+	utils "github.com/miqxzz/commonmiqx"
+	"github.com/miqxzz/miqxzzforum/forum_service/internal/controllers/grpc"
+	"github.com/miqxzz/miqxzzforum/forum_service/internal/entity"
+	"github.com/miqxzz/miqxzzforum/forum_service/internal/repository"
+	"github.com/miqxzz/miqxzzforum/forum_service/internal/usecase"
+	"go.uber.org/zap"
 )
 
 type PostHandler struct {
@@ -18,7 +19,7 @@ type PostHandler struct {
 	postRepo    repository.PostRepository
 	jwtUtil     *utils.JWTUtil
 	logger      *zap.Logger
-	userClient  *grpc.UserClient
+	userClient  grpc.UserClientInterface
 }
 
 func NewPostHandler(
@@ -26,7 +27,7 @@ func NewPostHandler(
 	postRepo repository.PostRepository,
 	jwtUtil *utils.JWTUtil,
 	logger *zap.Logger,
-	userClient *grpc.UserClient,
+	userClient grpc.UserClientInterface,
 ) *PostHandler {
 	return &PostHandler{
 		postUsecase: postUsecase,
@@ -35,6 +36,12 @@ func NewPostHandler(
 		logger:      logger,
 		userClient:  userClient,
 	}
+}
+
+func (h *PostHandler) Register(router *gin.Engine) {
+	router.POST("/posts", h.CreatePost)
+	router.GET("/posts", h.GetPosts)
+	router.DELETE("/posts/:id", h.DeletePost)
 }
 
 // CreatePost godoc

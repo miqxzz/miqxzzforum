@@ -1,30 +1,33 @@
 package main
 
 import (
-	utils "github.com/Engls/EnglsJwt"
-	mygrpc "github.com/Engls/forum-project2/auth_service/internal/delivery/grpc"
-	"google.golang.org/grpc"
-
-	user "github.com/Engls/forum-project2/auth_service/internal/proto"
-	"github.com/gin-contrib/cors"
 	"log"
 	"net"
+	"os"
+	"os/signal"
+	"syscall"
 	"time"
 
-	_ "github.com/Engls/forum-project2/auth_service/docs"
-	"github.com/Engls/forum-project2/auth_service/internal/config"
-	"github.com/Engls/forum-project2/auth_service/internal/delivery/http"
-	"github.com/Engls/forum-project2/auth_service/internal/repository"
-	"github.com/Engls/forum-project2/auth_service/internal/usecase"
+	"github.com/gin-contrib/cors"
+	user "github.com/miqxzz/miqxzzforum/auth_service/internal/proto"
+
 	"github.com/gin-gonic/gin"
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/sqlite3"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/mattn/go-sqlite3"
+	commonmiqx "github.com/miqxzz/commonmiqx"
+	_ "github.com/miqxzz/miqxzzforum/auth_service/docs"
+	"github.com/miqxzz/miqxzzforum/auth_service/internal/config"
+	mygrpc "github.com/miqxzz/miqxzzforum/auth_service/internal/delivery/grpc"
+	"github.com/miqxzz/miqxzzforum/auth_service/internal/delivery/http"
+	"github.com/miqxzz/miqxzzforum/auth_service/internal/repository"
+	"github.com/miqxzz/miqxzzforum/auth_service/internal/usecase"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"go.uber.org/zap"
+	"google.golang.org/grpc"
 )
 
 // @title Auth Service API
@@ -34,10 +37,14 @@ import (
 // @BasePath /
 
 func main() {
+	// Инициализация логгера
+	logger, err := commonmiqx.InitLogger()
+	if err != nil {
+		log.Fatalf("Failed to initialize logger: %v", err)
+	}
+	defer logger.Sync()
 
-	utils.InitLogger()
-	logger := utils.GetLogger()
-
+	// Загрузка конфигурации
 	cfg, err := config.LoadConfig()
 	if err != nil {
 		logger.Fatal("Failed to load config", zap.Error(err))
@@ -50,6 +57,7 @@ func main() {
 		zap.String("JWT_SECRET", cfg.JWTSecret),
 	)
 
+	// Инициализация подключения к базе данных
 	db, err := sqlx.Open("sqlite3", cfg.DBPath)
 	if err != nil {
 		logger.Fatal("Failed to connect to database", zap.Error(err))
@@ -76,9 +84,11 @@ func main() {
 	}
 	logger.Info("Migrations applied successfully")
 
+	// Инициализация репозитория
 	userRepo := repository.NewAuthRepository(db, logger)
 	userServer := mygrpc.NewUserServer(userRepo)
 
+	// Инициализация gRPC сервера
 	grpcServer := grpc.NewServer()
 	user.RegisterUserServiceServer(grpcServer, userServer)
 
@@ -93,7 +103,8 @@ func main() {
 			log.Fatal(err)
 		}
 	}()
-	jwtUtil := utils.NewJWTUtil(cfg.JWTSecret)
+
+	jwtUtil := commonmiqx.NewJWTUtil(cfg.JWTSecret)
 	userUsecase := usecase.NewAuthUsecase(userRepo, jwtUtil, logger)
 	authHandler := http.NewAuthHandler(userUsecase, jwtUtil, logger)
 
@@ -106,12 +117,20 @@ func main() {
 		AllowCredentials: true,
 		MaxAge:           12 * time.Hour,
 	}))
-	router.POST("/register", authHandler.Register)
-	router.POST("/login", authHandler.Login)
+	router.POST("/auth/register", authHandler.Register)
+	router.POST("/auth/login", authHandler.Login)
+	router.POST("/auth/update-role", authHandler.UpdateUserRole)
 
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	if err := router.Run(cfg.Port); err != nil {
 		logger.Fatal("Failed to start server", zap.Error(err))
 	}
+
+	// Ожидаем сигнал завершения
+	signalChan := make(chan os.Signal, 1)
+	signal.Notify(signalChan, os.Interrupt, syscall.SIGTERM)
+	<-signalChan
+
+	logger.Info("Shutting down server")
 }

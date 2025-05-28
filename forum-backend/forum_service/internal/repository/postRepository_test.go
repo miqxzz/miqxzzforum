@@ -3,12 +3,13 @@ package repository
 import (
 	"context"
 	"errors"
+	"testing"
+
 	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/Engls/forum-project2/forum_service/internal/entity"
-	"github.com/Engls/forum-project2/forum_service/internal/repository/adapters"
+	"github.com/miqxzz/miqxzzforum/forum_service/internal/entity"
+	"github.com/miqxzz/miqxzzforum/forum_service/internal/repository/adapters"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/zap"
-	"testing"
 )
 
 func TestPostRepository_CreatePost_Success(t *testing.T) {
@@ -97,7 +98,7 @@ func TestPostRepository_GetPosts_Success(t *testing.T) {
 	mock.ExpectQuery(`SELECT id, author_id, title, content FROM posts`).
 		WillReturnRows(rows)
 
-	result, err := postRepo.GetPosts(context.Background())
+	result, err := postRepo.GetPosts(context.Background(), 10, 0)
 
 	assert.NoError(t, err)
 	assert.Equal(t, posts, result)
@@ -120,7 +121,7 @@ func TestPostRepository_GetPosts_Failure(t *testing.T) {
 	mock.ExpectQuery(`SELECT id, author_id, title, content FROM posts`).
 		WillReturnError(errors.New("failed to get posts"))
 
-	result, err := postRepo.GetPosts(context.Background())
+	result, err := postRepo.GetPosts(context.Background(), 10, 0)
 
 	assert.Error(t, err)
 	assert.Nil(t, result)

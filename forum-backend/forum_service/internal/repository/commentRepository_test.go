@@ -3,12 +3,12 @@ package repository
 import (
 	"context"
 	"errors"
-	"github.com/Engls/forum-project2/forum_service/internal/repository/adapters"
 	"testing"
 	"time"
 
 	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/Engls/forum-project2/forum_service/internal/entity"
+	"github.com/miqxzz/miqxzzforum/forum_service/internal/entity"
+	"github.com/miqxzz/miqxzzforum/forum_service/internal/repository/adapters"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/zap"
 )

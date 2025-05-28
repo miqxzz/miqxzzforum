@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="SqlDialectMappings">
+    <file url="file://$PROJECT_DIR$/forum-backend/auth_service/migrations/001_create_all_tables.up.sql" dialect="SQLite" />
+    <file url="file://$PROJECT_DIR$/forum-backend/forum_service/internal/repository/chatRepository.go" dialect="SQLite" />
+    <file url="file://$PROJECT_DIR$/forum-backend/forum_service/internal/repository/postRepository.go" dialect="SQLite" />
+    <file url="PROJECT" dialect="SQLite" />
+  </component>
+</project>

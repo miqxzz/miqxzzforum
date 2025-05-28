@@ -4,14 +4,15 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	utils "github.com/Engls/EnglsJwt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
-	"github.com/Engls/forum-project2/forum_service/internal/entity"
-	"github.com/Engls/forum-project2/forum_service/mocks"
+	utils "github.com/miqxzz/commonmiqx"
+
 	"github.com/gin-gonic/gin"
+	"github.com/miqxzz/miqxzzforum/forum_service/internal/entity"
+	"github.com/miqxzz/miqxzzforum/forum_service/mocks"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"go.uber.org/zap"
@@ -23,8 +24,9 @@ func TestCommentHandler_CreateComment_Success(t *testing.T) {
 
 	mockCommentUsecase := new(mocks.CommentsUsecases)
 	jwtUtil := utils.NewJWTUtil("secret")
+	mockUserClient := new(mocks.UserClient)
 
-	commentHandler := NewCommentHandler(mockCommentUsecase, jwtUtil, logger)
+	commentHandler := NewCommentHandler(mockCommentUsecase, jwtUtil, logger, mockUserClient)
 
 	token, err := jwtUtil.GenerateToken(1, "user")
 	assert.NoError(t, err)
@@ -62,8 +64,9 @@ func TestCommentHandler_CreateComment_InvalidPostID(t *testing.T) {
 
 	mockCommentUsecase := new(mocks.CommentsUsecases)
 	jwtUtil := utils.NewJWTUtil("secret")
+	mockUserClient := new(mocks.UserClient)
 
-	commentHandler := NewCommentHandler(mockCommentUsecase, jwtUtil, logger)
+	commentHandler := NewCommentHandler(mockCommentUsecase, jwtUtil, logger, mockUserClient)
 
 	token, err := jwtUtil.GenerateToken(1, "user")
 	assert.NoError(t, err)
@@ -94,8 +97,9 @@ func TestCommentHandler_CreateComment_MissingAuthorizationHeader(t *testing.T) {
 
 	mockCommentUsecase := new(mocks.CommentsUsecases)
 	jwtUtil := utils.NewJWTUtil("secret")
+	mockUserClient := new(mocks.UserClient)
 
-	commentHandler := NewCommentHandler(mockCommentUsecase, jwtUtil, logger)
+	commentHandler := NewCommentHandler(mockCommentUsecase, jwtUtil, logger, mockUserClient)
 
 	comment := entity.Comment{
 		Content: "This is a test comment",
@@ -122,8 +126,9 @@ func TestCommentHandler_CreateComment_InvalidAuthorizationHeaderFormat(t *testin
 
 	mockCommentUsecase := new(mocks.CommentsUsecases)
 	jwtUtil := utils.NewJWTUtil("secret")
+	mockUserClient := new(mocks.UserClient)
 
-	commentHandler := NewCommentHandler(mockCommentUsecase, jwtUtil, logger)
+	commentHandler := NewCommentHandler(mockCommentUsecase, jwtUtil, logger, mockUserClient)
 
 	comment := entity.Comment{
 		Content: "This is a test comment",
@@ -151,8 +156,9 @@ func TestCommentHandler_CreateComment_InvalidToken(t *testing.T) {
 
 	mockCommentUsecase := new(mocks.CommentsUsecases)
 	jwtUtil := utils.NewJWTUtil("secret")
+	mockUserClient := new(mocks.UserClient)
 
-	commentHandler := NewCommentHandler(mockCommentUsecase, jwtUtil, logger)
+	commentHandler := NewCommentHandler(mockCommentUsecase, jwtUtil, logger, mockUserClient)
 
 	comment := entity.Comment{
 		Content: "This is a test comment",
@@ -180,8 +186,9 @@ func TestCommentHandler_CreateComment_FailedToCreateComment(t *testing.T) {
 
 	mockCommentUsecase := new(mocks.CommentsUsecases)
 	jwtUtil := utils.NewJWTUtil("secret")
+	mockUserClient := new(mocks.UserClient)
 
-	commentHandler := NewCommentHandler(mockCommentUsecase, jwtUtil, logger)
+	commentHandler := NewCommentHandler(mockCommentUsecase, jwtUtil, logger, mockUserClient)
 
 	token, err := jwtUtil.GenerateToken(1, "user")
 	assert.NoError(t, err)
@@ -216,8 +223,9 @@ func TestCommentHandler_GetCommentsByPostID_Success(t *testing.T) {
 
 	mockCommentUsecase := new(mocks.CommentsUsecases)
 	jwtUtil := utils.NewJWTUtil("secret")
+	mockUserClient := new(mocks.UserClient)
 
-	commentHandler := NewCommentHandler(mockCommentUsecase, jwtUtil, logger)
+	commentHandler := NewCommentHandler(mockCommentUsecase, jwtUtil, logger, mockUserClient)
 
 	comments := []entity.Comment{
 		{ID: 1, PostId: 1, Content: "Comment 1"},
@@ -234,7 +242,7 @@ func TestCommentHandler_GetCommentsByPostID_Success(t *testing.T) {
 	c.Request = req
 	c.Params = gin.Params{gin.Param{Key: "id", Value: "1"}}
 
-	commentHandler.GetCommentsByPostID(c)
+	commentHandler.GetComments(c)
 
 	assert.Equal(t, http.StatusOK, w.Code)
 	var responseComments []entity.Comment
@@ -251,8 +259,9 @@ func TestCommentHandler_GetCommentsByPostID_InvalidPostID(t *testing.T) {
 
 	mockCommentUsecase := new(mocks.CommentsUsecases)
 	jwtUtil := utils.NewJWTUtil("secret")
+	mockUserClient := new(mocks.UserClient)
 
-	commentHandler := NewCommentHandler(mockCommentUsecase, jwtUtil, logger)
+	commentHandler := NewCommentHandler(mockCommentUsecase, jwtUtil, logger, mockUserClient)
 
 	req, _ := http.NewRequest("GET", "/posts/invalid/comments", nil)
 	req.Header.Set("Content-Type", "application/json")
@@ -262,7 +271,7 @@ func TestCommentHandler_GetCommentsByPostID_InvalidPostID(t *testing.T) {
 	c.Request = req
 	c.Params = gin.Params{gin.Param{Key: "id", Value: "invalid"}}
 
-	commentHandler.GetCommentsByPostID(c)
+	commentHandler.GetComments(c)
 
 	assert.Equal(t, http.StatusBadRequest, w.Code)
 	assert.Contains(t, w.Body.String(), "Invalid post ID")
@@ -274,8 +283,9 @@ func TestCommentHandler_GetCommentsByPostID_FailedToGetComments(t *testing.T) {
 
 	mockCommentUsecase := new(mocks.CommentsUsecases)
 	jwtUtil := utils.NewJWTUtil("secret")
+	mockUserClient := new(mocks.UserClient)
 
-	commentHandler := NewCommentHandler(mockCommentUsecase, jwtUtil, logger)
+	commentHandler := NewCommentHandler(mockCommentUsecase, jwtUtil, logger, mockUserClient)
 
 	mockCommentUsecase.On("GetCommentByPostID", mock.Anything, 1).Return(nil, errors.New("failed to get comments"))
 
@@ -287,7 +297,7 @@ func TestCommentHandler_GetCommentsByPostID_FailedToGetComments(t *testing.T) {
 	c.Request = req
 	c.Params = gin.Params{gin.Param{Key: "id", Value: "1"}}
 
-	commentHandler.GetCommentsByPostID(c)
+	commentHandler.GetComments(c)
 
 	assert.Equal(t, http.StatusInternalServerError, w.Code)
 	assert.Contains(t, w.Body.String(), "failed to get comments")

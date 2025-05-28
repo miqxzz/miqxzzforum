@@ -5,8 +5,8 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/Engls/forum-project2/forum_service/internal/entity"
-	"github.com/Engls/forum-project2/forum_service/mocks"
+	"github.com/miqxzz/miqxzzforum/forum_service/internal/entity"
+	"github.com/miqxzz/miqxzzforum/forum_service/mocks"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"go.uber.org/zap"
@@ -77,7 +77,7 @@ func TestPostUsecase_GetPosts_Success(t *testing.T) {
 
 	mockPostRepo.On("GetPosts", mock.Anything).Return(posts, nil)
 
-	result, err := postUsecase.GetPosts(context.Background())
+	result, err := postUsecase.GetPosts(context.Background(), 10, 0)
 
 	assert.NoError(t, err)
 	assert.Equal(t, posts, result)
@@ -95,7 +95,7 @@ func TestPostUsecase_GetPosts_Failure(t *testing.T) {
 
 	mockPostRepo.On("GetPosts", mock.Anything).Return(nil, errors.New("failed to get posts"))
 
-	result, err := postUsecase.GetPosts(context.Background())
+	result, err := postUsecase.GetPosts(context.Background(), 10, 0)
 
 	assert.Error(t, err)
 	assert.Nil(t, result)

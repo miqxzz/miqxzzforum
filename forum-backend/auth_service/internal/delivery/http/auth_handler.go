@@ -1,10 +1,11 @@
 package http
 
 import (
-	utils "github.com/Engls/EnglsJwt"
-	"github.com/Engls/forum-project2/auth_service/internal/entity"
-	"github.com/Engls/forum-project2/auth_service/internal/usecase"
 	"net/http"
+
+	utils "github.com/miqxzz/commonmiqx"
+	entity "github.com/miqxzz/miqxzzforum/auth_service/internal/entity"
+	usecase "github.com/miqxzz/miqxzzforum/auth_service/internal/usecase"
 
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
@@ -86,4 +87,56 @@ func (h *AuthHandler) Login(c *gin.Context) {
 	}
 	h.logger.Info("User logged in successfully", zap.String("username", req.Username))
 	c.JSON(http.StatusOK, gin.H{"token": token, "role": role, "username": req.Username, "userID": userId})
+}
+
+// UpdateUserRole godoc
+// @Summary Изменение роли пользователя
+// @Description Изменяет роль пользователя (только для администраторов)
+// @Tags Аутентификация
+// @Accept json
+// @Produce json
+// @Param request body entity.UpdateRoleRequest true "Данные для изменения роли"
+// @Success 200 {object} entity.RegisterResponse
+// @Failure 400 {object} entity.ErrorResponse
+// @Failure 401 {object} entity.ErrorResponse
+// @Failure 403 {object} entity.ErrorResponse
+// @Failure 500 {object} entity.ErrorResponse
+// @Router /auth/update-role [post]
+func (h *AuthHandler) UpdateUserRole(c *gin.Context) {
+	// Проверяем роль текущего пользователя
+	token := c.GetHeader("Authorization")
+	if token == "" {
+		h.logger.Error("No authorization token provided")
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "требуется авторизация"})
+		return
+	}
+
+	role, err := h.jwtUtil.GetRoleFromToken(token)
+	if err != nil {
+		h.logger.Error("Failed to get role from token", zap.Error(err))
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "недействительный токен"})
+		return
+	}
+
+	if role != "admin" {
+		h.logger.Error("Unauthorized role update attempt", zap.String("role", role))
+		c.JSON(http.StatusForbidden, gin.H{"error": "недостаточно прав"})
+		return
+	}
+
+	var req entity.UpdateRoleRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		h.logger.Error("Failed to bind JSON for role update", zap.Error(err))
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err := h.authUsecase.UpdateUserRole(req.UserID, req.NewRole); err != nil {
+		h.logger.Error("Failed to update user role", zap.Error(err), zap.Int("userID", req.UserID))
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	h.logger.Info("User role updated successfully", zap.Int("userID", req.UserID), zap.String("newRole", req.NewRole))
+	c.JSON(http.StatusOK, gin.H{"message": "Роль пользователя успешно обновлена"})
 }

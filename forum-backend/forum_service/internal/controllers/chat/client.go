@@ -2,12 +2,13 @@ package chat
 
 import (
 	"context"
-	"github.com/Engls/forum-project2/forum_service/internal/entity"
-	"github.com/Engls/forum-project2/forum_service/internal/usecase"
-	"github.com/goccy/go-json"
-	"github.com/gorilla/websocket"
 	"log"
 	"time"
+
+	"github.com/goccy/go-json"
+	"github.com/gorilla/websocket"
+	"github.com/miqxzz/miqxzzforum/forum_service/internal/entity"
+	"github.com/miqxzz/miqxzzforum/forum_service/internal/usecase"
 )
 
 type Client struct {

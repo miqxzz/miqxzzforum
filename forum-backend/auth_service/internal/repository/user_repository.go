@@ -3,7 +3,8 @@ package repository
 import (
 	"context"
 	"database/sql"
-	"github.com/Engls/forum-project2/auth_service/internal/entity"
+
+	entity "github.com/miqxzz/miqxzzforum/auth_service/internal/entity"
 	"go.uber.org/zap"
 )
 
@@ -18,6 +19,7 @@ type AuthRepository interface {
 	GetUserByUsername(username string) (entity.User, error)
 	SaveToken(userID int, token string) error
 	GetUsernameByID(ctx context.Context, userID int) (string, error)
+	UpdateUserRole(userID int, newRole string) error
 }
 
 type authRepository struct {
@@ -70,4 +72,14 @@ func (r *authRepository) GetUsernameByID(ctx context.Context, userID int) (strin
 		return "", err
 	}
 	return username, nil
+}
+
+func (r *authRepository) UpdateUserRole(userID int, newRole string) error {
+	_, err := r.db.Exec("UPDATE users SET role = ? WHERE id = ?", newRole, userID)
+	if err != nil {
+		r.logger.Error("Failed to update user role", zap.Error(err), zap.Int("userID", userID), zap.String("newRole", newRole))
+		return err
+	}
+	r.logger.Info("User role updated successfully", zap.Int("userID", userID), zap.String("newRole", newRole))
+	return nil
 }

@@ -9,16 +9,17 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Engls/EnglsJwt"
-	"github.com/Engls/forum-project2/forum_service/internal/controllers/chat"
-	http2 "github.com/Engls/forum-project2/forum_service/internal/controllers/http"
-	"github.com/Engls/forum-project2/forum_service/internal/entity"
-	"github.com/Engls/forum-project2/forum_service/internal/repository"
-	"github.com/Engls/forum-project2/forum_service/internal/usecase"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/mattn/go-sqlite3"
+	commonmiqx "github.com/miqxzz/commonmiqx"
+	"github.com/miqxzz/miqxzzforum/forum_service/internal/controllers/chat"
+	"github.com/miqxzz/miqxzzforum/forum_service/internal/controllers/grpc"
+	http2 "github.com/miqxzz/miqxzzforum/forum_service/internal/controllers/http"
+	"github.com/miqxzz/miqxzzforum/forum_service/internal/entity"
+	"github.com/miqxzz/miqxzzforum/forum_service/internal/repository"
+	"github.com/miqxzz/miqxzzforum/forum_service/internal/usecase"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/zap"
 )
@@ -97,10 +98,11 @@ func TestForumService_Integration(t *testing.T) {
 	commentUsecase := usecase.NewCommentsUsecases(commentRepo, logger)
 	hub := chat.NewHub()
 	chatUsecase := usecase.NewChatUsecase(chatRepo, logger)
-	jwtUtil := EnglsJwt.NewJWTUtil("secret")
+	jwtUtil := commonmiqx.NewJWTUtil("secret")
+	mockUserClient := &grpc.UserClient{}
 
-	postHandler := http2.NewPostHandler(postUsecase, postRepo, jwtUtil, logger)
-	commentHandler := http2.NewCommentHandler(commentUsecase, jwtUtil, logger)
+	postHandler := http2.NewPostHandler(postUsecase, postRepo, jwtUtil, logger, mockUserClient)
+	commentHandler := http2.NewCommentHandler(commentUsecase, jwtUtil, logger, mockUserClient)
 	chatHandler := http2.NewChatHandler(hub, chatUsecase, jwtUtil, logger)
 
 	router := gin.Default()
@@ -118,7 +120,7 @@ func TestForumService_Integration(t *testing.T) {
 	router.GET("/posts", postHandler.GetPosts)
 	router.DELETE("/posts/:id", postHandler.DeletePost)
 	router.POST("/posts/:id/comments", commentHandler.CreateComment)
-	router.GET("/posts/:id/comments", commentHandler.GetCommentsByPostID)
+	router.GET("/posts/:id/comments", commentHandler.GetComments)
 
 	token, err := jwtUtil.GenerateToken(1, "user")
 	if err != nil {

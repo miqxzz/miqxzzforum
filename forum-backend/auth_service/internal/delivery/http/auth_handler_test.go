@@ -4,15 +4,16 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	utils "github.com/Engls/EnglsJwt"
-	"github.com/Engls/forum-project2/auth_service/internal/entity"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
-	_ "github.com/Engls/forum-project2/auth_service/internal/usecase"
-	"github.com/Engls/forum-project2/auth_service/mocks"
+	utils "github.com/miqxzz/commonmiqx"
+	entity "github.com/miqxzz/miqxzzforum/auth_service/internal/entity"
+
 	"github.com/gin-gonic/gin"
+	_ "github.com/miqxzz/miqxzzforum/auth_service/internal/usecase"
+	"github.com/miqxzz/miqxzzforum/auth_service/mocks"
 	"github.com/stretchr/testify/assert"
 	_ "github.com/stretchr/testify/mock"
 	"go.uber.org/zap"
@@ -188,6 +189,104 @@ func TestAuthHandler_Login_GetUserIDFromTokenFailure(t *testing.T) {
 
 	assert.Equal(t, http.StatusInternalServerError, w.Code)
 	assert.Contains(t, w.Body.String(), "invalid character")
+
+	mockAuthUsecase.AssertExpectations(t)
+}
+
+func TestAuthHandler_UpdateUserRole_Success(t *testing.T) {
+	logger, _ := zap.NewProduction()
+	mockAuthUsecase := new(mocks.AuthUsecase)
+	jwtUtil := utils.NewJWTUtil("secret")
+
+	// Генерируем токен для админа
+	token, _ := jwtUtil.GenerateToken(1, "admin")
+
+	req := entity.UpdateRoleRequest{
+		UserID:  2,
+		NewRole: "moderator",
+	}
+
+	mockAuthUsecase.On("UpdateUserRole", req.UserID, req.NewRole).Return(nil)
+
+	authHandler := NewAuthHandler(mockAuthUsecase, jwtUtil, logger)
+
+	w := httptest.NewRecorder()
+	c, _ := gin.CreateTestContext(w)
+	c.Request = httptest.NewRequest(http.MethodPost, "/auth/update-role", bytes.NewBufferString(`{"user_id":2,"new_role":"moderator"}`))
+	c.Request.Header.Set("Content-Type", "application/json")
+	c.Request.Header.Set("Authorization", token)
+
+	authHandler.UpdateUserRole(c)
+
+	assert.Equal(t, http.StatusOK, w.Code)
+	assert.Contains(t, w.Body.String(), "Роль пользователя успешно обновлена")
+
+	mockAuthUsecase.AssertExpectations(t)
+}
+
+func TestAuthHandler_UpdateUserRole_NoToken(t *testing.T) {
+	logger, _ := zap.NewProduction()
+	mockAuthUsecase := new(mocks.AuthUsecase)
+	jwtUtil := utils.NewJWTUtil("secret")
+
+	authHandler := NewAuthHandler(mockAuthUsecase, jwtUtil, logger)
+
+	w := httptest.NewRecorder()
+	c, _ := gin.CreateTestContext(w)
+	c.Request = httptest.NewRequest(http.MethodPost, "/auth/update-role", bytes.NewBufferString(`{"user_id":2,"new_role":"moderator"}`))
+	c.Request.Header.Set("Content-Type", "application/json")
+
+	authHandler.UpdateUserRole(c)
+
+	assert.Equal(t, http.StatusUnauthorized, w.Code)
+	assert.Contains(t, w.Body.String(), "требуется авторизация")
+
+	mockAuthUsecase.AssertExpectations(t)
+}
+
+func TestAuthHandler_UpdateUserRole_NotAdmin(t *testing.T) {
+	logger, _ := zap.NewProduction()
+	mockAuthUsecase := new(mocks.AuthUsecase)
+	jwtUtil := utils.NewJWTUtil("secret")
+
+	// Генерируем токен для обычного пользователя
+	token, _ := jwtUtil.GenerateToken(1, "user")
+
+	authHandler := NewAuthHandler(mockAuthUsecase, jwtUtil, logger)
+
+	w := httptest.NewRecorder()
+	c, _ := gin.CreateTestContext(w)
+	c.Request = httptest.NewRequest(http.MethodPost, "/auth/update-role", bytes.NewBufferString(`{"user_id":2,"new_role":"moderator"}`))
+	c.Request.Header.Set("Content-Type", "application/json")
+	c.Request.Header.Set("Authorization", token)
+
+	authHandler.UpdateUserRole(c)
+
+	assert.Equal(t, http.StatusForbidden, w.Code)
+	assert.Contains(t, w.Body.String(), "недостаточно прав")
+
+	mockAuthUsecase.AssertExpectations(t)
+}
+
+func TestAuthHandler_UpdateUserRole_InvalidRequest(t *testing.T) {
+	logger, _ := zap.NewProduction()
+	mockAuthUsecase := new(mocks.AuthUsecase)
+	jwtUtil := utils.NewJWTUtil("secret")
+
+	// Генерируем токен для админа
+	token, _ := jwtUtil.GenerateToken(1, "admin")
+
+	authHandler := NewAuthHandler(mockAuthUsecase, jwtUtil, logger)
+
+	w := httptest.NewRecorder()
+	c, _ := gin.CreateTestContext(w)
+	c.Request = httptest.NewRequest(http.MethodPost, "/auth/update-role", bytes.NewBufferString(`invalid json`))
+	c.Request.Header.Set("Content-Type", "application/json")
+	c.Request.Header.Set("Authorization", token)
+
+	authHandler.UpdateUserRole(c)
+
+	assert.Equal(t, http.StatusBadRequest, w.Code)
 
 	mockAuthUsecase.AssertExpectations(t)
 }

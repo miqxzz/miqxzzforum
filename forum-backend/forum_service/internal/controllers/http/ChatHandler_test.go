@@ -1,14 +1,15 @@
 package http
 
 import (
-	utils "github.com/Engls/EnglsJwt"
 	"net/http/httptest"
 	"testing"
 
-	"github.com/Engls/forum-project2/forum_service/internal/controllers/chat"
-	"github.com/Engls/forum-project2/forum_service/mocks"
+	utils "github.com/miqxzz/commonmiqx"
+
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
+	"github.com/miqxzz/miqxzzforum/forum_service/internal/controllers/chat"
+	"github.com/miqxzz/miqxzzforum/forum_service/mocks"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/zap"
 )

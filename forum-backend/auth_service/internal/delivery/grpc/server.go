@@ -2,8 +2,9 @@ package grpc
 
 import (
 	"context"
-	"github.com/Engls/forum-project2/auth_service/internal/proto"
-	"github.com/Engls/forum-project2/auth_service/internal/repository"
+
+	user "github.com/miqxzz/miqxzzforum/auth_service/internal/proto"
+	"github.com/miqxzz/miqxzzforum/auth_service/internal/repository"
 )
 
 type UserServer struct {

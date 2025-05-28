@@ -33,24 +33,41 @@ const Button = styled.button`
   }
 `;
 
+const ErrorMessage = styled.div`
+  color: #dc3545;
+  margin: 10px 0;
+  text-align: center;
+`;
+
+const PasswordRequirements = styled.div`
+  margin: 10px 0;
+  padding: 10px;
+  background-color: #f8f9fa;
+  border-radius: 5px;
+  width: 300px;
+  box-sizing: border-box;
+`;
+
 const Register = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
     const navigate = useNavigate();
 
     const handleRegister = async () => {
         try {
+            setError('');
             const response = await axios.post('http://localhost:8080/register', 
               { 
                 username: username,
-                 password: password,
-                 role: "user",
-                 });
+                password: password,
+                role: "user",
+              });
             localStorage.setItem('token', response.data.token);
             navigate('/Login');
         } catch (error) {
             console.error('Registration failed:', error);
-            alert('Registration failed. Please try again.');
+            setError(error.response?.data?.error || 'Registration failed. Please try again.');
         }
     };
 
@@ -69,6 +86,13 @@ const Register = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
             />
+            <PasswordRequirements>
+                <h4>Требования к паролю:</h4>
+                <ul>
+                    <li>Минимум 5 символов</li>
+                </ul>
+            </PasswordRequirements>
+            {error && <ErrorMessage>{error}</ErrorMessage>}
             <Button onClick={handleRegister}>Register</Button>
         </RegisterContainer>
     );

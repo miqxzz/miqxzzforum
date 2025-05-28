@@ -1,26 +1,29 @@
-module github.com/Engls/forum-project2/forum_service
+module github.com/miqxzz/miqxzzforum/forum_service
 
 go 1.23.6
 
+toolchain go1.24.0
+
 require (
 	github.com/DATA-DOG/go-sqlmock v1.5.2
-	github.com/Engls/EnglsJwt v0.1.5
 	github.com/gin-contrib/cors v1.7.5
 	github.com/gin-gonic/gin v1.10.0
 	github.com/goccy/go-json v0.10.5
-	github.com/golang-migrate/migrate/v4 v4.18.2
 	github.com/gorilla/websocket v1.5.3
 	github.com/jmoiron/sqlx v1.4.0
 	github.com/joho/godotenv v1.5.1
-	github.com/mattn/go-sqlite3 v1.14.22
+	github.com/mattn/go-sqlite3 v1.14.27
+	github.com/miqxzz/commonmiqx v0.0.0-20240218180000-bebf38eb029a
 	github.com/stretchr/testify v1.10.0
-	github.com/swaggo/files v1.0.1
-	github.com/swaggo/gin-swagger v1.6.0
 	github.com/swaggo/swag v1.16.4
 	go.uber.org/zap v1.27.0
 	google.golang.org/grpc v1.64.1
 	google.golang.org/protobuf v1.36.6
 )
+
+require github.com/rogpeppe/go-internal v1.12.0 // indirect
+
+replace github.com/miqxzz/commonmiqx => ../commonmiqx
 
 require (
 	github.com/KyleBanks/depth v1.2.1 // indirect

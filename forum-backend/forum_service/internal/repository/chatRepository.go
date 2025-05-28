@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"time"
 
-	"github.com/Engls/forum-project2/forum_service/internal/entity"
+	"github.com/miqxzz/miqxzzforum/forum_service/internal/entity"
 	"go.uber.org/zap"
 )
 

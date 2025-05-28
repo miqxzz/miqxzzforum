@@ -5,8 +5,8 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/Engls/forum-project2/auth_service/internal/entity"
-	"github.com/Engls/forum-project2/auth_service/mocks"
+	entity "github.com/miqxzz/miqxzzforum/auth_service/internal/entity"
+	mocks "github.com/miqxzz/miqxzzforum/auth_service/mocks"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"go.uber.org/zap"
@@ -129,5 +129,39 @@ func TestAuthRepository_SaveToken_Failure(t *testing.T) {
 
 	assert.Error(t, err)
 
+	mockDB.AssertExpectations(t)
+}
+
+func TestAuthRepository_UpdateUserRole_Success(t *testing.T) {
+	logger, _ := zap.NewProduction()
+	mockDB := new(mocks.DB)
+
+	userID := 1
+	newRole := "admin"
+
+	mockDB.On("Exec", "UPDATE users SET role = ? WHERE id = ?", newRole, userID).Return(sql.Result(nil), nil)
+
+	authRepo := NewAuthRepository(mockDB, logger)
+
+	err := authRepo.UpdateUserRole(userID, newRole)
+
+	assert.NoError(t, err)
+	mockDB.AssertExpectations(t)
+}
+
+func TestAuthRepository_UpdateUserRole_Failure(t *testing.T) {
+	logger, _ := zap.NewProduction()
+	mockDB := new(mocks.DB)
+
+	userID := 1
+	newRole := "admin"
+
+	mockDB.On("Exec", "UPDATE users SET role = ? WHERE id = ?", newRole, userID).Return(nil, errors.New("failed to update role"))
+
+	authRepo := NewAuthRepository(mockDB, logger)
+
+	err := authRepo.UpdateUserRole(userID, newRole)
+
+	assert.Error(t, err)
 	mockDB.AssertExpectations(t)
 }

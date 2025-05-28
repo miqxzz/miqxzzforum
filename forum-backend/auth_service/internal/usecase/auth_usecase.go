@@ -2,9 +2,10 @@ package usecase
 
 import (
 	"errors"
-	utils "github.com/Engls/EnglsJwt"
-	"github.com/Engls/forum-project2/auth_service/internal/entity"
-	"github.com/Engls/forum-project2/auth_service/internal/repository"
+
+	utils "github.com/miqxzz/commonmiqx"
+	entity "github.com/miqxzz/miqxzzforum/auth_service/internal/entity"
+	repository "github.com/miqxzz/miqxzzforum/auth_service/internal/repository"
 	"go.uber.org/zap"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -13,6 +14,7 @@ type AuthUsecase interface {
 	Register(username, password, role string) error
 	Login(username, password string) (string, error)
 	GetUserRole(username string) (string, error)
+	UpdateUserRole(userID int, newRole string) error
 }
 
 type authUsecase struct {
@@ -25,7 +27,19 @@ func NewAuthUsecase(authRepo repository.AuthRepository, jwtUtil *utils.JWTUtil, 
 	return &authUsecase{authRepo: authRepo, jwtUtil: jwtUtil, logger: logger}
 }
 
+func validatePassword(password string) error {
+	if len(password) < 5 {
+		return errors.New("пароль должен содержать минимум 5 символов")
+	}
+	return nil
+}
+
 func (u *authUsecase) Register(username, password, role string) error {
+	if err := validatePassword(password); err != nil {
+		u.logger.Error("Invalid password format", zap.Error(err), zap.String("username", username))
+		return err
+	}
+
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
 		u.logger.Error("Failed to hash password", zap.Error(err), zap.String("username", username))
@@ -71,4 +85,18 @@ func (u *authUsecase) GetUserRole(username string) (string, error) {
 	}
 	u.logger.Info("User role retrieved successfully", zap.String("username", username), zap.String("role", user.Role))
 	return user.Role, nil
+}
+
+func (u *authUsecase) UpdateUserRole(userID int, newRole string) error {
+	if newRole != "user" && newRole != "admin" && newRole != "moderator" {
+		u.logger.Error("Invalid role", zap.String("role", newRole))
+		return errors.New("недопустимая роль пользователя")
+	}
+
+	if err := u.authRepo.UpdateUserRole(userID, newRole); err != nil {
+		u.logger.Error("Failed to update user role", zap.Error(err), zap.Int("userID", userID), zap.String("newRole", newRole))
+		return err
+	}
+	u.logger.Info("User role updated successfully", zap.Int("userID", userID), zap.String("newRole", newRole))
+	return nil
 }

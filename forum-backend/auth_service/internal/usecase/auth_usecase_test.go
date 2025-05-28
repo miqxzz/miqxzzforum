@@ -4,9 +4,9 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/Engls/EnglsJwt"
-	"github.com/Engls/forum-project2/auth_service/internal/entity"
-	"github.com/Engls/forum-project2/auth_service/mocks"
+	commonmiqx "github.com/miqxzz/commonmiqx"
+	entity "github.com/miqxzz/miqxzzforum/auth_service/internal/entity"
+	mocks "github.com/miqxzz/miqxzzforum/auth_service/mocks"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"go.uber.org/zap"
@@ -14,14 +14,13 @@ import (
 )
 
 func TestAuthUsecase_Register_Success(t *testing.T) {
-
 	logger, _ := zap.NewProduction()
 
 	mockAuthRepo := new(mocks.AuthRepository)
-	jwtUtil := EnglsJwt.NewJWTUtil("secret")
+	jwtUtil := commonmiqx.NewJWTUtil("secret")
 
 	username := "testuser"
-	password := "password"
+	password := "12345"
 	role := "user"
 
 	mockAuthRepo.On("Register", mock.AnythingOfType("entity.User")).Return(nil)
@@ -35,12 +34,40 @@ func TestAuthUsecase_Register_Success(t *testing.T) {
 	mockAuthRepo.AssertExpectations(t)
 }
 
+func TestAuthUsecase_Register_InvalidPassword(t *testing.T) {
+	logger, _ := zap.NewProduction()
+
+	mockAuthRepo := new(mocks.AuthRepository)
+	jwtUtil := commonmiqx.NewJWTUtil("secret")
+
+	testCases := []struct {
+		name     string
+		password string
+		errorMsg string
+	}{
+		{
+			name:     "Too short",
+			password: "1234",
+			errorMsg: "пароль должен содержать минимум 5 символов",
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			authUsecase := NewAuthUsecase(mockAuthRepo, jwtUtil, logger)
+			err := authUsecase.Register("testuser", tc.password, "user")
+			assert.Error(t, err)
+			assert.Equal(t, tc.errorMsg, err.Error())
+		})
+	}
+}
+
 func TestAuthUsecase_Register_Failure(t *testing.T) {
 
 	logger, _ := zap.NewProduction()
 
 	mockAuthRepo := new(mocks.AuthRepository)
-	jwtUtil := EnglsJwt.NewJWTUtil("secret")
+	jwtUtil := commonmiqx.NewJWTUtil("secret")
 
 	username := "testuser"
 	password := "password"
@@ -62,7 +89,7 @@ func TestAuthUsecase_Login_Success(t *testing.T) {
 	logger, _ := zap.NewProduction()
 
 	mockAuthRepo := new(mocks.AuthRepository)
-	jwtUtil := EnglsJwt.NewJWTUtil("secret")
+	jwtUtil := commonmiqx.NewJWTUtil("secret")
 
 	username := "testuser"
 	password := "password"
@@ -87,7 +114,7 @@ func TestAuthUsecase_Login_Failure_InvalidCredentials(t *testing.T) {
 	logger, _ := zap.NewProduction()
 
 	mockAuthRepo := new(mocks.AuthRepository)
-	jwtUtil := EnglsJwt.NewJWTUtil("secret")
+	jwtUtil := commonmiqx.NewJWTUtil("secret")
 
 	username := "testuser"
 	password := "password"
@@ -109,7 +136,7 @@ func TestAuthUsecase_Login_Failure_InvalidPassword(t *testing.T) {
 	logger, _ := zap.NewProduction()
 
 	mockAuthRepo := new(mocks.AuthRepository)
-	jwtUtil := EnglsJwt.NewJWTUtil("secret")
+	jwtUtil := commonmiqx.NewJWTUtil("secret")
 
 	username := "testuser"
 	password := "password"
@@ -133,7 +160,7 @@ func TestAuthUsecase_GetUserRole_Success(t *testing.T) {
 	logger, _ := zap.NewProduction()
 
 	mockAuthRepo := new(mocks.AuthRepository)
-	jwtUtil := EnglsJwt.NewJWTUtil("secret")
+	jwtUtil := commonmiqx.NewJWTUtil("secret")
 
 	username := "testuser"
 	user := entity.User{ID: 1, Username: username, Password: "hashedpassword", Role: "user"}
@@ -155,7 +182,7 @@ func TestAuthUsecase_GetUserRole_Failure(t *testing.T) {
 	logger, _ := zap.NewProduction()
 
 	mockAuthRepo := new(mocks.AuthRepository)
-	jwtUtil := EnglsJwt.NewJWTUtil("secret")
+	jwtUtil := commonmiqx.NewJWTUtil("secret")
 
 	username := "testuser"
 
@@ -168,5 +195,58 @@ func TestAuthUsecase_GetUserRole_Failure(t *testing.T) {
 	assert.Error(t, err)
 	assert.Equal(t, "", role)
 
+	mockAuthRepo.AssertExpectations(t)
+}
+
+func TestAuthUsecase_UpdateUserRole_Success(t *testing.T) {
+	logger, _ := zap.NewProduction()
+	mockAuthRepo := new(mocks.AuthRepository)
+	jwtUtil := commonmiqx.NewJWTUtil("secret")
+
+	userID := 1
+	newRole := "admin"
+
+	mockAuthRepo.On("UpdateUserRole", userID, newRole).Return(nil)
+
+	authUsecase := NewAuthUsecase(mockAuthRepo, jwtUtil, logger)
+
+	err := authUsecase.UpdateUserRole(userID, newRole)
+
+	assert.NoError(t, err)
+	mockAuthRepo.AssertExpectations(t)
+}
+
+func TestAuthUsecase_UpdateUserRole_InvalidRole(t *testing.T) {
+	logger, _ := zap.NewProduction()
+	mockAuthRepo := new(mocks.AuthRepository)
+	jwtUtil := commonmiqx.NewJWTUtil("secret")
+
+	userID := 1
+	invalidRole := "invalid_role"
+
+	authUsecase := NewAuthUsecase(mockAuthRepo, jwtUtil, logger)
+
+	err := authUsecase.UpdateUserRole(userID, invalidRole)
+
+	assert.Error(t, err)
+	assert.Equal(t, "недопустимая роль пользователя", err.Error())
+	mockAuthRepo.AssertExpectations(t)
+}
+
+func TestAuthUsecase_UpdateUserRole_RepositoryError(t *testing.T) {
+	logger, _ := zap.NewProduction()
+	mockAuthRepo := new(mocks.AuthRepository)
+	jwtUtil := commonmiqx.NewJWTUtil("secret")
+
+	userID := 1
+	newRole := "admin"
+
+	mockAuthRepo.On("UpdateUserRole", userID, newRole).Return(errors.New("database error"))
+
+	authUsecase := NewAuthUsecase(mockAuthRepo, jwtUtil, logger)
+
+	err := authUsecase.UpdateUserRole(userID, newRole)
+
+	assert.Error(t, err)
 	mockAuthRepo.AssertExpectations(t)
 }

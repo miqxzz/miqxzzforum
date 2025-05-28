@@ -4,14 +4,16 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	utils "github.com/Engls/EnglsJwt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
-	"github.com/Engls/forum-project2/forum_service/internal/entity"
-	"github.com/Engls/forum-project2/forum_service/mocks"
+	utils "github.com/miqxzz/commonmiqx"
+
 	"github.com/gin-gonic/gin"
+	"github.com/miqxzz/miqxzzforum/forum_service/internal/controllers/grpc"
+	"github.com/miqxzz/miqxzzforum/forum_service/internal/entity"
+	"github.com/miqxzz/miqxzzforum/forum_service/mocks"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"go.uber.org/zap"
@@ -24,8 +26,9 @@ func TestPostHandler_CreatePost_Success(t *testing.T) {
 	mockPostUsecase := new(mocks.PostUsecase)
 	mockPostRepo := new(mocks.PostRepository)
 	jwtUtil := utils.NewJWTUtil("secret")
+	mockUserClient := &grpc.UserClient{}
 
-	postHandler := NewPostHandler(mockPostUsecase, mockPostRepo, jwtUtil, logger)
+	postHandler := NewPostHandler(mockPostUsecase, mockPostRepo, jwtUtil, logger, mockUserClient)
 
 	post := &entity.Post{
 		Title:   "Test Post",
@@ -60,8 +63,9 @@ func TestPostHandler_CreatePost_MissingAuthorizationHeader(t *testing.T) {
 	mockPostUsecase := new(mocks.PostUsecase)
 	mockPostRepo := new(mocks.PostRepository)
 	jwtUtil := utils.NewJWTUtil("secret")
+	mockUserClient := &grpc.UserClient{}
 
-	postHandler := NewPostHandler(mockPostUsecase, mockPostRepo, jwtUtil, logger)
+	postHandler := NewPostHandler(mockPostUsecase, mockPostRepo, jwtUtil, logger, mockUserClient)
 
 	post := entity.Post{
 		Title:   "Test Post",
@@ -89,8 +93,9 @@ func TestPostHandler_CreatePost_InvalidAuthorizationHeaderFormat(t *testing.T) {
 	mockPostUsecase := new(mocks.PostUsecase)
 	mockPostRepo := new(mocks.PostRepository)
 	jwtUtil := utils.NewJWTUtil("secret")
+	mockUserClient := &grpc.UserClient{}
 
-	postHandler := NewPostHandler(mockPostUsecase, mockPostRepo, jwtUtil, logger)
+	postHandler := NewPostHandler(mockPostUsecase, mockPostRepo, jwtUtil, logger, mockUserClient)
 
 	post := entity.Post{
 		Title:   "Test Post",
@@ -119,8 +124,9 @@ func TestPostHandler_CreatePost_InvalidToken(t *testing.T) {
 	mockPostUsecase := new(mocks.PostUsecase)
 	mockPostRepo := new(mocks.PostRepository)
 	jwtUtil := utils.NewJWTUtil("secret")
+	mockUserClient := &grpc.UserClient{}
 
-	postHandler := NewPostHandler(mockPostUsecase, mockPostRepo, jwtUtil, logger)
+	postHandler := NewPostHandler(mockPostUsecase, mockPostRepo, jwtUtil, logger, mockUserClient)
 
 	post := entity.Post{
 		Title:   "Test Post",
@@ -153,8 +159,9 @@ func TestPostHandler_CreatePost_FailedToCreatePost(t *testing.T) {
 	mockPostUsecase := new(mocks.PostUsecase)
 	mockPostRepo := new(mocks.PostRepository)
 	jwtUtil := utils.NewJWTUtil("secret")
+	mockUserClient := &grpc.UserClient{}
 
-	postHandler := NewPostHandler(mockPostUsecase, mockPostRepo, jwtUtil, logger)
+	postHandler := NewPostHandler(mockPostUsecase, mockPostRepo, jwtUtil, logger, mockUserClient)
 
 	post := &entity.Post{
 		Title:   "Test Post",
@@ -189,15 +196,16 @@ func TestPostHandler_GetPosts_Success(t *testing.T) {
 	mockPostUsecase := new(mocks.PostUsecase)
 	mockPostRepo := new(mocks.PostRepository)
 	jwtUtil := utils.NewJWTUtil("secret")
+	mockUserClient := &grpc.UserClient{}
 
-	postHandler := NewPostHandler(mockPostUsecase, mockPostRepo, jwtUtil, logger)
+	postHandler := NewPostHandler(mockPostUsecase, mockPostRepo, jwtUtil, logger, mockUserClient)
 
 	posts := []entity.Post{
 		{ID: 1, Title: "Post 1", Content: "Content 1"},
 		{ID: 2, Title: "Post 2", Content: "Content 2"},
 	}
 
-	mockPostRepo.On("GetPosts", mock.Anything).Return(posts, nil)
+	mockPostRepo.On("GetPosts", mock.Anything, 10, 0).Return(posts, nil)
 
 	req, _ := http.NewRequest("GET", "/posts", nil)
 	req.Header.Set("Content-Type", "application/json")
@@ -224,10 +232,11 @@ func TestPostHandler_GetPosts_FailedToGetPosts(t *testing.T) {
 	mockPostUsecase := new(mocks.PostUsecase)
 	mockPostRepo := new(mocks.PostRepository)
 	jwtUtil := utils.NewJWTUtil("secret")
+	mockUserClient := &grpc.UserClient{}
 
-	postHandler := NewPostHandler(mockPostUsecase, mockPostRepo, jwtUtil, logger)
+	postHandler := NewPostHandler(mockPostUsecase, mockPostRepo, jwtUtil, logger, mockUserClient)
 
-	mockPostRepo.On("GetPosts", mock.Anything).Return(nil, errors.New("failed to get posts"))
+	mockPostRepo.On("GetPosts", mock.Anything, 10, 0).Return(nil, errors.New("failed to get posts"))
 
 	req, _ := http.NewRequest("GET", "/posts", nil)
 	req.Header.Set("Content-Type", "application/json")
@@ -251,8 +260,9 @@ func TestPostHandler_DeletePost_MissingAuthorizationHeader(t *testing.T) {
 	mockPostUsecase := new(mocks.PostUsecase)
 	mockPostRepo := new(mocks.PostRepository)
 	jwtUtil := utils.NewJWTUtil("secret")
+	mockUserClient := &grpc.UserClient{}
 
-	postHandler := NewPostHandler(mockPostUsecase, mockPostRepo, jwtUtil, logger)
+	postHandler := NewPostHandler(mockPostUsecase, mockPostRepo, jwtUtil, logger, mockUserClient)
 
 	req, _ := http.NewRequest("DELETE", "/posts/1", nil)
 	req.Header.Set("Content-Type", "application/json")
@@ -275,8 +285,9 @@ func TestPostHandler_DeletePost_InvalidAuthorizationHeaderFormat(t *testing.T) {
 	mockPostUsecase := new(mocks.PostUsecase)
 	mockPostRepo := new(mocks.PostRepository)
 	jwtUtil := utils.NewJWTUtil("secret")
+	mockUserClient := &grpc.UserClient{}
 
-	postHandler := NewPostHandler(mockPostUsecase, mockPostRepo, jwtUtil, logger)
+	postHandler := NewPostHandler(mockPostUsecase, mockPostRepo, jwtUtil, logger, mockUserClient)
 
 	req, _ := http.NewRequest("DELETE", "/posts/1", nil)
 	req.Header.Set("Content-Type", "application/json")
@@ -300,8 +311,9 @@ func TestPostHandler_DeletePost_Success_Owner(t *testing.T) {
 	mockPostUsecase := new(mocks.PostUsecase)
 	mockPostRepo := new(mocks.PostRepository)
 	jwtUtil := utils.NewJWTUtil("secret")
+	mockUserClient := &grpc.UserClient{}
 
-	postHandler := NewPostHandler(mockPostUsecase, mockPostRepo, jwtUtil, logger)
+	postHandler := NewPostHandler(mockPostUsecase, mockPostRepo, jwtUtil, logger, mockUserClient)
 
 	token, err := jwtUtil.GenerateToken(1, "user")
 	assert.NoError(t, err)
@@ -333,8 +345,9 @@ func TestPostHandler_DeletePost_Success_Admin(t *testing.T) {
 	mockPostUsecase := new(mocks.PostUsecase)
 	mockPostRepo := new(mocks.PostRepository)
 	jwtUtil := utils.NewJWTUtil("secret")
+	mockUserClient := &grpc.UserClient{}
 
-	postHandler := NewPostHandler(mockPostUsecase, mockPostRepo, jwtUtil, logger)
+	postHandler := NewPostHandler(mockPostUsecase, mockPostRepo, jwtUtil, logger, mockUserClient)
 
 	token, err := jwtUtil.GenerateToken(1, "admin")
 	assert.NoError(t, err)
