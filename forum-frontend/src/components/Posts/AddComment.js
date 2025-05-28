@@ -11,31 +11,49 @@ const AddCommentContainer = styled.div`
 `;
 
 const CommentForm = styled.form`
-    display: flex;
-    flex-direction: column;
+    margin-top: 20px;
+    padding: 15px;
+    background: #f9f9f9;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
 `;
 
-const CommentTextarea = styled.textarea`
+const TextArea = styled.textarea`
+    width: 100%;
+    min-height: 100px;
     padding: 10px;
-    border: 1px solid #ccc;
+    border: 1px solid #ddd;
     border-radius: 4px;
     margin-bottom: 10px;
-    font-size: 14px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 400;
     resize: vertical;
+
+    &:focus {
+        outline: none;
+        border-color: #9b59b6;
+        box-shadow: 0 0 0 2px rgba(155, 89, 182, 0.2);
+    }
 `;
 
-const CommentButton = styled.button`
-    background-color: #4CAF50;
+const SubmitButton = styled.button`
+    background-color: #9b59b6;
     color: white;
-    padding: 10px 15px;
+    padding: 10px 20px;
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 1rem;
+    font-weight: 500;
     transition: background-color 0.2s ease;
 
     &:hover {
-        background-color: #3e8e41;
+        background-color: #8e44ad;
+    }
+
+    &:disabled {
+        background-color: #ccc;
+        cursor: not-allowed;
     }
 `;
 
@@ -75,13 +93,13 @@ const AddComment = ({ postId, onCommentCreated }) => {
     return (
         <AddCommentContainer>
             <CommentForm onSubmit={handleSubmit}>
-                <CommentTextarea
+                <TextArea
                     value={content}
                     onChange={(e) => setContent(e.target.value)}
                     placeholder="Add a comment..."
                     rows="3" // Allow for multiline input
                 />
-                <CommentButton type="submit">Post Comment</CommentButton>
+                <SubmitButton type="submit">Post Comment</SubmitButton>
             </CommentForm>
         </AddCommentContainer>
     );

@@ -15,47 +15,71 @@ const Container = styled.div`
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 `;
 
-const PostItemContainer = styled.div`
+const PostCard = styled.div`
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
     margin-bottom: 20px;
-    padding: 15px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     border: 1px solid #e0e0e0;
-    border-radius: 6px;
-    background-color: #f9f9f9;
+    transition: transform 0.2s ease;
+
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
 `;
 
-const PostTitle = styled.h3`
-    color: #333;
-    text-align: center;
-    margin-bottom: 5px;
-    font-size: 32px;
+const PostTitle = styled.h2`
+    color: #8e44ad;
+    margin: 0 0 10px 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+`;
+
+const PostMeta = styled.div`
+    color: #666;
+    font-size: 0.9rem;
+    margin-bottom: 15px;
+    font-weight: 400;
 `;
 
 const PostContent = styled.p`
-    color: #555;
-    font-size: 16px;
-    margin-bottom: 10px;
-    text-align: left;
+    color: #333;
+    line-height: 1.6;
+    margin-bottom: 15px;
+    font-weight: 400;
 `;
 
-const PostAuthor = styled.small`
-    color: #777;
-    font-style: italic;
+const PostActions = styled.div`
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #eee;
 `;
 
-const DeleteButton = styled.button`
-    background-color: #f44336;
-    color: white;
-    padding: 8px 12px;
+const ActionButton = styled.button`
+    background: none;
     border: none;
-    border-radius: 4px;
+    color: #9b59b6;
     cursor: pointer;
-    transition: background-color 0.2s ease;
-    margin-right: 10px;
+    padding: 5px 10px;
+    font-size: 0.9rem;
+    transition: color 0.2s ease;
+    font-weight: 500;
 
     &:hover {
-        background-color: #d32f2f;
+        color: #8e44ad;
     }
-    margin-top: 10px;
+`;
+
+const DeleteButton = styled(ActionButton)`
+    color: #e74c3c;
+    &:hover {
+        color: #c0392b;
+    }
 `;
 
 const EditButton = styled.button`
@@ -66,6 +90,7 @@ const EditButton = styled.button`
     border-radius: 4px;
     cursor: pointer;
     transition: background-color 0.2s ease;
+    font-weight: 500;
 
     &:hover {
         background-color: #0b7dda;
@@ -81,11 +106,13 @@ const LoadingMessage = styled.p`
     color: #555;
     font-style: italic;
     text-align: center;
+    font-weight: 400;
 `;
 
 const ErrorMessage = styled.p`
     color: #d32f2f;
     text-align: center;
+    font-weight: 500;
 `;
 
 const PaginationContainer = styled.div`
@@ -260,7 +287,7 @@ const PostList = () => {
             ) : (
                 <>
                     {posts.map(post => (
-                        <PostItemContainer key={post.id}>
+                        <PostCard key={post.id}>
                             {editingPostId === post.id ? (
                                 <>
                                     <input 
@@ -274,31 +301,35 @@ const PostList = () => {
                                         onChange={(e) => setEditContent(e.target.value)} 
                                         style={{width: '100%', minHeight: '100px', marginBottom: '10px'}}
                                     />
-                                    <ButtonContainer>
-                                        <button onClick={() => handleSaveEdit(post.id)}>Save</button>
-                                        <button onClick={handleCancelEdit}>Cancel</button>
-                                    </ButtonContainer>
+                                    <PostActions>
+                                        <ButtonContainer>
+                                            <button onClick={() => handleSaveEdit(post.id)}>Save</button>
+                                            <button onClick={handleCancelEdit}>Cancel</button>
+                                        </ButtonContainer>
+                                    </PostActions>
                                 </>
                             ) : (
                                 <>
                                     <PostTitle>{post.title}</PostTitle>
+                                    <PostMeta>Posted by: {post.username || `User ID: ${post.author_id}`}</PostMeta>
                                     <PostContent>{post.content}</PostContent>
-                                    <PostAuthor>Posted by: {post.username || `User ID: ${post.author_id}`}</PostAuthor>
                                     <CommentList postId={post.id} />
                                     <AddComment postId={post.id} onCommentCreated={handleCommentCreated} />
-                                    {(isAdmin || userId === post.author_id) && (
-                                        <ButtonContainer>
-                                            <EditButton onClick={() => handleEditPost(post)}>
-                                                Edit
-                                            </EditButton>
-                                            <DeleteButton onClick={() => handleDeletePost(post.id)}>
-                                                Delete
-                                            </DeleteButton>
-                                        </ButtonContainer>
-                                    )}
+                                    <PostActions>
+                                        {(isAdmin || userId === post.author_id) && (
+                                            <ButtonContainer>
+                                                <EditButton onClick={() => handleEditPost(post)}>
+                                                    Edit
+                                                </EditButton>
+                                                <DeleteButton onClick={() => handleDeletePost(post.id)}>
+                                                    Delete
+                                                </DeleteButton>
+                                            </ButtonContainer>
+                                        )}
+                                    </PostActions>
                                 </>
                             )}
-                        </PostItemContainer>
+                        </PostCard>
                     ))}
 
                     <PaginationContainer>

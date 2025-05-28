@@ -23,25 +23,52 @@ const CommentContent = styled.p`
     font-size: 14px;
     color: #333;
     margin-bottom: 5px;
+    font-weight: 400;
 `;
 
 const CommentAuthor = styled.small`
     color: #777;
     font-style: italic;
+    font-weight: 300;
+`;
+
+const DeleteButton = styled.button`
+    background: none;
+    border: none;
+    color: #e74c3c;
+    cursor: pointer;
+    padding: 5px 10px;
+    font-size: 0.9rem;
+    transition: color 0.2s ease;
+    font-weight: 500;
+
+    &:hover {
+        color: #c0392b;
+    }
+`;
+
+const CommentHeader = styled.div`
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
 `;
 
 const LoadingMessage = styled.p`
     color: #555;
     font-style: italic;
+    font-weight: 400;
 `;
 
 const ErrorMessage = styled.p`
     color: #d32f2f;
+    font-weight: 500;
 `;
 
 const NoCommentsMessage = styled.p`
     color: #999;
     font-style: italic;
+    font-weight: 400;
 `;
 
 const PaginationContainer = styled.div`
@@ -71,10 +98,20 @@ const PageSizeSelect = styled.select`
     margin-left: 10px;
 `;
 
+const CommentContainer = styled.div`
+    background: #f9f9f9;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+    border: 1px solid #e0e0e0;
+`;
+
 const CommentList = ({ postId }) => {
     const [comments, setComments] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [isAdmin, setIsAdmin] = useState(false);
+    const [userId, setUserId] = useState(null);
     const [pagination, setPagination] = useState({
         page: 1,
         limit: 5,
@@ -85,6 +122,13 @@ const CommentList = ({ postId }) => {
     const refreshInterval = useRef(null);
     const cancelTokenSource = useRef(null);
 
+    useEffect(() => {
+        const storedRole = localStorage.getItem('role');
+        const storedUserId = localStorage.getItem('userID');
+        setIsAdmin(storedRole === 'admin');
+        setUserId(storedUserId ? parseInt(storedUserId) : null);
+    }, []);
+
     const fetchComments = async () => {
         if (isFetching.current) return;
         
@@ -92,12 +136,10 @@ const CommentList = ({ postId }) => {
         setLoading(true);
         setError(null);
 
-        // Отменяем предыдущий запрос, если он существует
         if (cancelTokenSource.current) {
             cancelTokenSource.current.cancel('Request canceled due to new request');
         }
         
-        // Создаем новый токен отмены
         cancelTokenSource.current = axios.CancelToken.source();
         
         try {
@@ -128,15 +170,37 @@ const CommentList = ({ postId }) => {
         }
     };
 
+    const handleDeleteComment = async (commentId) => {
+        const token = localStorage.getItem('token');
+
+        if (!token) {
+            alert('You are not authenticated.');
+            return;
+        }
+
+        try {
+            await axios.delete(`http://localhost:8081/comments/${commentId}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            fetchComments();
+        } catch (error) {
+            console.error('Error deleting comment:', error);
+            if (error.response && error.response.status === 403) {
+                alert('You are not authorized to delete this comment.');
+            } else {
+                alert('Failed to delete comment.');
+            }
+        }
+    };
+
     useEffect(() => {
-        // Первоначальная загрузка
         fetchComments();
 
-        // Устанавливаем интервал обновления
         const intervalId = setInterval(fetchComments, 5000);
         refreshInterval.current = intervalId;
 
-        // Очистка при размонтировании
         return () => {
             clearInterval(refreshInterval.current);
             if (cancelTokenSource.current) {
@@ -173,7 +237,14 @@ const CommentList = ({ postId }) => {
                 <>
                     {comments.map(comment => (
                         <CommentItem key={comment.id}>
-                            <CommentContent>{comment.content}</CommentContent>
+                            <CommentHeader>
+                                <CommentContent>{comment.content}</CommentContent>
+                                {(isAdmin || userId === comment.author_id) && (
+                                    <DeleteButton onClick={() => handleDeleteComment(comment.id)}>
+                                        Delete
+                                    </DeleteButton>
+                                )}
+                            </CommentHeader>
                             <CommentAuthor>By {comment.username || `User ID: ${comment.author_id}`}</CommentAuthor>
                         </CommentItem>
                     ))}
