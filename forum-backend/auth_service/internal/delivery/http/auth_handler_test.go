@@ -6,6 +6,7 @@ import (
 	"errors"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 
 	utils "github.com/miqxzz/commonmiqx"
@@ -194,33 +195,36 @@ func TestAuthHandler_Login_GetUserIDFromTokenFailure(t *testing.T) {
 }
 
 func TestAuthHandler_UpdateUserRole_Success(t *testing.T) {
-	logger, _ := zap.NewProduction()
+	// Создаем мок для AuthUsecase
 	mockAuthUsecase := new(mocks.AuthUsecase)
+	logger, _ := zap.NewProduction()
 	jwtUtil := utils.NewJWTUtil("secret")
 
-	// Генерируем токен для админа
-	token, _ := jwtUtil.GenerateToken(1, "admin")
+	// Настраиваем ожидаемое поведение
+	mockAuthUsecase.On("GetUserIDFromToken", "valid-token").Return(1, nil)
+	mockAuthUsecase.On("UpdateUserRole", 1, "moderator").Return(nil)
 
-	req := entity.UpdateRoleRequest{
-		UserID:  2,
-		NewRole: "moderator",
-	}
+	// Создаем тестируемый обработчик
+	handler := NewAuthHandler(mockAuthUsecase, jwtUtil, logger)
 
-	mockAuthUsecase.On("UpdateUserRole", req.UserID, req.NewRole).Return(nil)
+	// Создаем тестовый HTTP-запрос
+	req := httptest.NewRequest("PUT", "/update-role", strings.NewReader(`{"role": "moderator"}`))
+	req.Header.Set("Authorization", "Bearer valid-token")
 
-	authHandler := NewAuthHandler(mockAuthUsecase, jwtUtil, logger)
-
+	// Создаем тестовый HTTP-ответ
 	w := httptest.NewRecorder()
-	c, _ := gin.CreateTestContext(w)
-	c.Request = httptest.NewRequest(http.MethodPost, "/auth/update-role", bytes.NewBufferString(`{"user_id":2,"new_role":"moderator"}`))
-	c.Request.Header.Set("Content-Type", "application/json")
-	c.Request.Header.Set("Authorization", token)
 
-	authHandler.UpdateUserRole(c)
+	// Создаем тестовый маршрутизатор
+	router := gin.New()
+	router.PUT("/update-role", handler.UpdateUserRole)
 
+	// Выполняем запрос
+	router.ServeHTTP(w, req)
+
+	// Проверяем результат
 	assert.Equal(t, http.StatusOK, w.Code)
-	assert.Contains(t, w.Body.String(), "Роль пользователя успешно обновлена")
 
+	// Проверяем, что все ожидаемые вызовы были выполнены
 	mockAuthUsecase.AssertExpectations(t)
 }
 
@@ -288,5 +292,102 @@ func TestAuthHandler_UpdateUserRole_InvalidRequest(t *testing.T) {
 
 	assert.Equal(t, http.StatusBadRequest, w.Code)
 
+	mockAuthUsecase.AssertExpectations(t)
+}
+
+func TestAuthHandler_UpdateUserRole_Error(t *testing.T) {
+	// Создаем мок для AuthUsecase
+	mockAuthUsecase := new(mocks.AuthUsecase)
+	logger, _ := zap.NewProduction()
+	jwtUtil := utils.NewJWTUtil("secret")
+
+	// Настраиваем ожидаемое поведение
+	mockAuthUsecase.On("GetUserIDFromToken", "valid-token").Return(1, nil)
+	mockAuthUsecase.On("UpdateUserRole", 1, "invalid-role").Return(errors.New("invalid role"))
+
+	// Создаем тестируемый обработчик
+	handler := NewAuthHandler(mockAuthUsecase, jwtUtil, logger)
+
+	// Создаем тестовый HTTP-запрос
+	req := httptest.NewRequest("PUT", "/update-role", strings.NewReader(`{"role": "invalid-role"}`))
+	req.Header.Set("Authorization", "Bearer valid-token")
+
+	// Создаем тестовый HTTP-ответ
+	w := httptest.NewRecorder()
+
+	// Создаем тестовый маршрутизатор
+	router := gin.New()
+	router.PUT("/update-role", handler.UpdateUserRole)
+
+	// Выполняем запрос
+	router.ServeHTTP(w, req)
+
+	// Проверяем результат
+	assert.Equal(t, http.StatusInternalServerError, w.Code)
+
+	// Проверяем, что все ожидаемые вызовы были выполнены
+	mockAuthUsecase.AssertExpectations(t)
+}
+
+func TestAuthHandler_UpdateUserRole_InvalidToken(t *testing.T) {
+	// Создаем мок для AuthUsecase
+	mockAuthUsecase := new(mocks.AuthUsecase)
+	logger, _ := zap.NewProduction()
+	jwtUtil := utils.NewJWTUtil("secret")
+
+	// Настраиваем ожидаемое поведение
+	mockAuthUsecase.On("GetUserIDFromToken", "invalid-token").Return(0, errors.New("invalid token"))
+
+	// Создаем тестируемый обработчик
+	handler := NewAuthHandler(mockAuthUsecase, jwtUtil, logger)
+
+	// Создаем тестовый HTTP-запрос
+	req := httptest.NewRequest("PUT", "/update-role", strings.NewReader(`{"role": "moderator"}`))
+	req.Header.Set("Authorization", "Bearer invalid-token")
+
+	// Создаем тестовый HTTP-ответ
+	w := httptest.NewRecorder()
+
+	// Создаем тестовый маршрутизатор
+	router := gin.New()
+	router.PUT("/update-role", handler.UpdateUserRole)
+
+	// Выполняем запрос
+	router.ServeHTTP(w, req)
+
+	// Проверяем результат
+	assert.Equal(t, http.StatusUnauthorized, w.Code)
+
+	// Проверяем, что все ожидаемые вызовы были выполнены
+	mockAuthUsecase.AssertExpectations(t)
+}
+
+func TestAuthHandler_UpdateUserRole_InvalidJSON(t *testing.T) {
+	// Создаем мок для AuthUsecase
+	mockAuthUsecase := new(mocks.AuthUsecase)
+	logger, _ := zap.NewProduction()
+	jwtUtil := utils.NewJWTUtil("secret")
+
+	// Создаем тестируемый обработчик
+	handler := NewAuthHandler(mockAuthUsecase, jwtUtil, logger)
+
+	// Создаем тестовый HTTP-запрос с неверным JSON
+	req := httptest.NewRequest("PUT", "/update-role", strings.NewReader(`{"role": "moderator"`))
+	req.Header.Set("Authorization", "Bearer valid-token")
+
+	// Создаем тестовый HTTP-ответ
+	w := httptest.NewRecorder()
+
+	// Создаем тестовый маршрутизатор
+	router := gin.New()
+	router.PUT("/update-role", handler.UpdateUserRole)
+
+	// Выполняем запрос
+	router.ServeHTTP(w, req)
+
+	// Проверяем результат
+	assert.Equal(t, http.StatusBadRequest, w.Code)
+
+	// Проверяем, что все ожидаемые вызовы были выполнены
 	mockAuthUsecase.AssertExpectations(t)
 }

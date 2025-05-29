@@ -129,6 +129,25 @@ func TestPostRepository_GetPosts_Failure(t *testing.T) {
 	assert.NoError(t, mock.ExpectationsWereMet())
 }
 
+func TestPostRepository_GetPostByID_Success(t *testing.T) {
+	logger, _ := zap.NewProduction()
+	db, mock, err := sqlmock.New()
+	assert.NoError(t, err)
+	defer db.Close()
+
+	dbAdapter := &adapters.DbAdapter{DB: db}
+	postRepo := NewPostRepository(dbAdapter, logger)
+
+	post := entity.Post{ID: 1, AuthorId: 1, Title: "Test", Content: "Test content"}
+	rows := sqlmock.NewRows([]string{"id", "author_id", "title", "content"}).AddRow(post.ID, post.AuthorId, post.Title, post.Content)
+	mock.ExpectQuery(`SELECT id, author_id, title, content FROM posts WHERE id = \?`).WithArgs(post.ID).WillReturnRows(rows)
+
+	result, err := postRepo.GetPostByID(context.Background(), post.ID)
+	assert.NoError(t, err)
+	assert.Equal(t, &post, result)
+	assert.NoError(t, mock.ExpectationsWereMet())
+}
+
 func TestPostRepository_GetPostByID_Failure(t *testing.T) {
 
 	logger, _ := zap.NewProduction()
@@ -318,5 +337,40 @@ func TestPostRepository_GetUserIDByToken_Failure(t *testing.T) {
 	assert.Error(t, err)
 	assert.Equal(t, 0, result)
 
+	assert.NoError(t, mock.ExpectationsWereMet())
+}
+
+func TestPostRepository_GetTotalPostsCount_Success(t *testing.T) {
+	logger, _ := zap.NewProduction()
+	db, mock, err := sqlmock.New()
+	assert.NoError(t, err)
+	defer db.Close()
+
+	dbAdapter := &adapters.DbAdapter{DB: db}
+	postRepo := NewPostRepository(dbAdapter, logger)
+
+	rows := sqlmock.NewRows([]string{"COUNT(*)"}).AddRow(5)
+	mock.ExpectQuery(`SELECT COUNT\(\*\) FROM posts`).WillReturnRows(rows)
+
+	count, err := postRepo.GetTotalPostsCount(context.Background())
+	assert.NoError(t, err)
+	assert.Equal(t, 5, count)
+	assert.NoError(t, mock.ExpectationsWereMet())
+}
+
+func TestPostRepository_GetTotalPostsCount_Failure(t *testing.T) {
+	logger, _ := zap.NewProduction()
+	db, mock, err := sqlmock.New()
+	assert.NoError(t, err)
+	defer db.Close()
+
+	dbAdapter := &adapters.DbAdapter{DB: db}
+	postRepo := NewPostRepository(dbAdapter, logger)
+
+	mock.ExpectQuery(`SELECT COUNT\(\*\) FROM posts`).WillReturnError(errors.New("count error"))
+
+	count, err := postRepo.GetTotalPostsCount(context.Background())
+	assert.Error(t, err)
+	assert.Equal(t, 0, count)
 	assert.NoError(t, mock.ExpectationsWereMet())
 }

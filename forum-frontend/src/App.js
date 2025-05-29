@@ -15,12 +15,15 @@ const AppContainer = styled.div`
 
 const PrivateRoute = ({ children }) => {
     const { isAuthenticated } = useAuth();
+    if (!isAuthenticated) {
+        return <Navigate to="/login" replace />;
+    }
     return children;
 };
 
 const App = () => {
     const onPostCreated = () => {
-        console.log('Post was created');
+        console.log('Пост был создан');
     };
 
     return (
@@ -39,7 +42,6 @@ const App = () => {
                             } />
                             <Route path="/" element={<Navigate to="/login" />} />
                         </Routes>
-                        <Chat /> {/* Включаем компонент чата */}
                     </MainLayout>
                 </Router>
             </AppContainer>

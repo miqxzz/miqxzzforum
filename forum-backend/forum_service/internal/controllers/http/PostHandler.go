@@ -42,6 +42,7 @@ func (h *PostHandler) Register(router *gin.Engine) {
 	router.POST("/posts", h.CreatePost)
 	router.GET("/posts", h.GetPosts)
 	router.DELETE("/posts/:id", h.DeletePost)
+	router.PUT("/posts/:id", h.UpdatePost)
 }
 
 // CreatePost godoc

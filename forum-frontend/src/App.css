@@ -1,6 +1,7 @@
 body {
-  font-family: Arial, sans-serif;
-  background-color: #f4f4f4;
+  font-family: 'Montserrat', sans-serif;
+  background-color: #f8f4fc;
+  color: #3d2466;
   margin: 0;
   padding: 0;
   display: flex;
@@ -17,8 +18,10 @@ body {
   text-align: center;
 }
 
-h1 {
-  margin-bottom: 20px;
+h1, h2, h3, h4, h5, h6 {
+  color: #8e44ad;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
 }
 
 form {
@@ -33,32 +36,47 @@ label {
 input, textarea {
   margin-bottom: 15px;
   padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  border: 1.5px solid #c8a2e8;
+  border-radius: 5px;
+  font-family: 'Montserrat', sans-serif;
+  color: #3d2466;
+  transition: border 0.2s;
 }
 
-button {
+input:focus, textarea:focus {
+  border: 1.5px solid #9b59b6;
+  outline: none;
+}
+
+button, .btn {
   padding: 10px;
   border: none;
-  border-radius: 4px;
-  background-color: #007bff;
+  border-radius: 6px;
+  background: linear-gradient(90deg, #9b59b6 0%, #8e44ad 100%);
   color: #fff;
   cursor: pointer;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  transition: background 0.3s, box-shadow 0.3s;
+  box-shadow: 0 2px 8px #e1d5ee44;
 }
 
-button:hover {
-  background-color: #0056b3;
+button:hover, .btn:hover {
+  background: linear-gradient(90deg, #8e44ad 0%, #9b59b6 100%);
+  box-shadow: 0 4px 16px #c8a2e8aa;
 }
 
 a {
   display: block;
   margin-top: 15px;
-  color: #007bff;
+  color: #9b59b6;
   text-decoration: none;
+  font-family: 'Montserrat', sans-serif;
+  transition: color 0.3s;
 }
 
 a:hover {
-  text-decoration: underline;
+  color: #8e44ad;
 }
 
 ul {
@@ -72,4 +90,9 @@ li {
   padding: 10px;
   border-radius: 4px;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.main-container, .App {
+  background-color: #f8f4fc;
+  font-family: 'Montserrat', sans-serif;
 }

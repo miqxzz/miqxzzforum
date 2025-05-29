@@ -6,11 +6,13 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/mattn/go-sqlite3"
 	commonmiqx "github.com/miqxzz/commonmiqx"
 	"github.com/miqxzz/miqxzzforum/forum_service/internal/config"
+	"github.com/miqxzz/miqxzzforum/forum_service/internal/controllers/chat"
 	"github.com/miqxzz/miqxzzforum/forum_service/internal/controllers/grpc"
 	"github.com/miqxzz/miqxzzforum/forum_service/internal/controllers/http"
 	"github.com/miqxzz/miqxzzforum/forum_service/internal/repository"
@@ -43,9 +45,17 @@ func main() {
 	postRepo := repository.NewPostRepository(db, logger)
 	commentRepo := repository.NewCommentsRepository(db, logger)
 
+	jwtUtil := commonmiqx.NewJWTUtil("your-secret-key")
 	// Инициализация use cases
 	postUsecase := usecase.NewPostUsecase(postRepo, logger)
 	commentUsecase := usecase.NewCommentsUsecases(commentRepo, logger)
+
+	// --- ЧАТ ---
+	chatRepo := repository.NewChatRepository(db, logger)
+	chatUsecase := usecase.NewChatUsecase(chatRepo, logger)
+	chatHub := chat.NewHub()
+	go chatHub.Run()
+	chatHandler := http.NewChatHandler(chatHub, chatUsecase, jwtUtil, logger)
 
 	// Инициализация gRPC клиента для пользователей
 	userClient, err := grpc.NewUserClient(cfg.AuthServiceAddr)
@@ -54,11 +64,18 @@ func main() {
 	}
 	defer userClient.Close()
 
-	jwtUtil := commonmiqx.NewJWTUtil("secret")
 	// Инициализация HTTP сервера
 	router := gin.Default()
+	router.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"http://localhost:3000"},
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+	}))
 	http.NewPostHandler(postUsecase, postRepo, jwtUtil, logger, userClient).Register(router)
 	http.NewCommentHandler(commentUsecase, jwtUtil, logger, userClient).Register(router)
+	router.GET("/ws", chatHandler.ServeWS)
 
 	// Запуск HTTP сервера
 	go func() {

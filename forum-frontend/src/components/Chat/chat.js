@@ -3,88 +3,95 @@ import styled from 'styled-components';
 import { useAuth } from './AuthContext';
 
 const ChatContainer = styled.div`
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  width: 350px;
-  height: 500px;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  background: white;
+  width: 420px;
+  min-height: 340px;
+  background: #fff;
+  border: 2px solid #a678f7;
+  border-radius: 18px;
+  box-shadow: 0 2px 16px #e1d5ee33;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
-  z-index: 1000;
+  margin: 0 auto;
+  margin-bottom: 32px;
+  font-family: 'Montserrat', sans-serif;
 `;
 
 const MessageList = styled.div`
   flex: 1;
-  padding: 15px;
+  padding: 18px 12px 8px 12px;
   overflow-y: auto;
-  background: #f9f9f9;
-  border-radius: 10px 10px 0 0;
+  background: none;
+  border-radius: 16px 16px 0 0;
 `;
 
 const MessageItem = styled.div`
   margin-bottom: 12px;
-  padding: 10px 15px;
-  background: ${props => props.isOwn ? '#e3f2fd' : '#ffffff'};
-  border-radius: 15px;
-  align-self: ${props => props.isOwn ? 'flex-end' : 'flex-start'};
-  max-width: 80%;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  padding: 10px 18px;
+  background: #faf7ff;
+  border-radius: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: none;
+  font-family: 'Montserrat', sans-serif;
 `;
 
 const MessageHeader = styled.div`
   display: flex;
   justify-content: space-between;
-  margin-bottom: 5px;
-  font-size: 0.8rem;
-  color: #555;
+  width: 100%;
+  font-size: 0.95em;
+  color: #a678f7;
+  margin-bottom: 2px;
 `;
 
 const MessageContent = styled.div`
-  word-wrap: break-word;
+  color: #3d2466;
+  font-size: 1.1em;
+  font-family: 'Montserrat', sans-serif;
 `;
 
 const MessageForm = styled.form`
   display: flex;
-  padding: 15px;
-  border-top: 1px solid #eee;
-  background: white;
-  border-radius: 0 0 10px 10px;
+  padding: 12px 12px 16px 12px;
+  border-top: 1.5px solid #f3e6fa;
+  background: none;
+  border-radius: 0 0 16px 16px;
 `;
 
 const MessageInput = styled.input`
   flex: 1;
   padding: 10px 15px;
-  border: 1px solid #ddd;
-  border-radius: 20px;
+  border: 2px solid #a678f7;
+  border-radius: 8px;
   outline: none;
-  font-size: 14px;
-
+  font-size: 1em;
+  font-family: 'Montserrat', sans-serif;
+  color: #3d2466;
+  background: #fff;
+  margin-right: 10px;
   &:focus {
-    border-color: #4d90fe;
+    border-color: #8e44ad;
   }
 `;
 
 const SendButton = styled.button`
-  margin-left: 10px;
-  padding: 0 20px;
-  background: #4d90fe;
-  color: white;
+  padding: 10px 22px;
+  background: #a678f7;
+  color: #fff;
   border: none;
-  border-radius: 20px;
-  cursor: pointer;
-  font-size: 14px;
+  border-radius: 8px;
+  font-size: 1em;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
   transition: background 0.2s;
-
+  box-shadow: 0 2px 8px #e1d5ee44;
   &:hover {
-    background: #357ae8;
+    background: #8e44ad;
   }
-
   &:disabled {
-    background: #cccccc;
+    background: #e1d5ee;
+    color: #fff;
     cursor: not-allowed;
   }
 `;
@@ -93,10 +100,35 @@ const StatusIndicator = styled.div.attrs({
     className: 'status-indicator'
   })`
     padding: 5px 15px;
-    font-size: 0.8rem;
-    color: ${props => props.$isConnected ? '#4CAF50' : '#F44336'};
-    background: #f5f5f5;
-    border-bottom: 1px solid #eee;
+    font-size: 0.9em;
+    color: ${props => props.$isConnected ? '#a678f7' : '#F44336'};
+    background: none;
+    border-bottom: none;
+    text-align: right;
+    margin-bottom: 8px;
+  `;
+
+const ChatMessage = styled.div`
+  background: ${props => props.isOwn ? '#e9d6f7' : '#f3e6fa'};
+  color: #3d2466;
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin-bottom: 8px;
+  font-family: 'Montserrat', sans-serif;
+`;
+
+const ChatInput = styled.input`
+  background: #f3e6fa;
+  border: 1.5px solid #c8a2e8;
+  border-radius: 5px;
+  padding: 8px;
+  font-family: 'Montserrat', sans-serif;
+  color: #3d2466;
+  transition: border 0.2s;
+  &:focus {
+    border: 1.5px solid #9b59b6;
+    outline: none;
+  }
   `;
 
   const Chat = () => {
@@ -112,10 +144,10 @@ const StatusIndicator = styled.div.attrs({
     const formatDate = (timestamp) => {
       try {
         const date = new Date(timestamp);
-        return isNaN(date.getTime()) ? 'Just now' : 
+        return isNaN(date.getTime()) ? 'Только что' : 
           date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
       } catch {
-        return 'Just now';
+        return 'Только что';
       }
     };
   
@@ -126,12 +158,12 @@ const StatusIndicator = styled.div.attrs({
         ws.current = new WebSocket(wsUrl);
   
         ws.current.onopen = () => {
-          console.log('WebSocket connected');
+          console.log('WebSocket подключен');
           setIsConnected(true);
         };
   
         ws.current.onclose = (e) => {
-          console.log('WebSocket disconnected', e.code);
+          console.log('WebSocket отключен', e.code);
           setIsConnected(false);
           if (e.code !== 1000) {
             setTimeout(connectWebSocket, 3000);
@@ -167,12 +199,12 @@ const StatusIndicator = styled.div.attrs({
               }];
             });
           } catch (err) {
-            console.error('Error processing message:', err);
+            console.error('Ошибка обработки сообщения:', err);
           }
         };
   
         ws.current.onerror = (err) => {
-          console.error('WebSocket error:', err);
+          console.error('Ошибка WebSocket:', err);
         };
       };
   
@@ -180,7 +212,7 @@ const StatusIndicator = styled.div.attrs({
   
       return () => {
         if (ws.current?.readyState === WebSocket.OPEN) {
-          ws.current.close(1000, 'Component unmounted');
+          ws.current.close(1000, 'Компонент отмонтирован');
         }
       };
     }, [user, isAuthenticated]);
@@ -215,24 +247,25 @@ const StatusIndicator = styled.div.attrs({
         ws.current.send(JSON.stringify(message));
         setNewMessage('');
       } catch (err) {
-        console.error('Error sending message:', err);
+        console.error('Ошибка отправки сообщения:', err);
       }
     };
   
     return (
       <ChatContainer>
-        <StatusIndicator $isConnected={isConnected}>
-          {isConnected ? 'Online' : 'Connecting...'}
-        </StatusIndicator>
-        
+    
         <MessageList>
           {messages.map((msg) => (
             <MessageItem key={msg.id} $isOwn={msg.userID === user?.id}>
               <MessageHeader>
                 <span>{msg.username}</span>
-                <span>{formatDate(msg.timestamp)}</span>
               </MessageHeader>
-              <MessageContent>{msg.content}</MessageContent>
+              <MessageContent>
+                {msg.content}
+                <span style={{ color: '#b085d6', fontSize: '0.95em', marginLeft: '10px' }}>
+                  {formatDate(msg.timestamp)}
+                </span>
+              </MessageContent>
             </MessageItem>
           ))}
           <div ref={messagesEndRef} />
@@ -243,23 +276,23 @@ const StatusIndicator = styled.div.attrs({
             <MessageInput
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
-              placeholder="Type a message..."
+              placeholder="Введите сообщение..."
               disabled={!isConnected}
             />
             <SendButton
               type="submit"
               disabled={!newMessage.trim() || !isConnected}
             >
-              Send
+                  Отправить
             </SendButton>
           </MessageForm>
         ) : (
           <MessageForm>
             <MessageInput
-              placeholder="Login to participate in chat"
+              placeholder="Войдите в чат"
               disabled
             />
-            <SendButton disabled>Send</SendButton>
+            <SendButton disabled>Отправить</SendButton>
           </MessageForm>
         )}
       </ChatContainer>

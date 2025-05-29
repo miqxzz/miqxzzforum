@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"context"
 	"errors"
 	"testing"
 
@@ -12,6 +13,28 @@ import (
 	"go.uber.org/zap"
 	"golang.org/x/crypto/bcrypt"
 )
+
+// Мок репозитория
+type mockAuthRepo struct{ mock.Mock }
+
+func (m *mockAuthRepo) Register(user entity.User) error {
+	args := m.Called(user)
+	return args.Error(0)
+}
+func (m *mockAuthRepo) Login(username, password string) (string, error) { return "token", nil }
+func (m *mockAuthRepo) GetUserRole(username string) (string, error)     { return "user", nil }
+func (m *mockAuthRepo) UpdateUserRole(userID int, newRole string) error {
+	args := m.Called(userID, newRole)
+	return args.Error(0)
+}
+func (m *mockAuthRepo) GetUserByUsername(username string) (entity.User, error) {
+	args := m.Called(username)
+	return args.Get(0).(entity.User), args.Error(1)
+}
+func (m *mockAuthRepo) SaveToken(userID int, token string) error { return nil }
+func (m *mockAuthRepo) GetUsernameByID(ctx context.Context, userID int) (string, error) {
+	return "", nil
+}
 
 func TestAuthUsecase_Register_Success(t *testing.T) {
 	logger, _ := zap.NewProduction()
@@ -249,4 +272,69 @@ func TestAuthUsecase_UpdateUserRole_RepositoryError(t *testing.T) {
 
 	assert.Error(t, err)
 	mockAuthRepo.AssertExpectations(t)
+}
+
+func TestRegister_Success(t *testing.T) {
+	repo := new(mockAuthRepo)
+	jwtUtil := commonmiqx.NewJWTUtil("secret")
+	logger, _ := zap.NewProduction()
+	uc := NewAuthUsecase(repo, jwtUtil, logger)
+
+	repo.On("Register", mock.AnythingOfType("entity.User")).Return(nil)
+
+	err := uc.Register("test", "12345", "user")
+	assert.NoError(t, err)
+}
+
+func TestRegister_InvalidPassword(t *testing.T) {
+	repo := new(mockAuthRepo)
+	jwtUtil := commonmiqx.NewJWTUtil("secret")
+	logger, _ := zap.NewProduction()
+	uc := NewAuthUsecase(repo, jwtUtil, logger)
+
+	err := uc.Register("test", "123", "user")
+	assert.Error(t, err)
+}
+
+func TestRegister_RepoError(t *testing.T) {
+	repo := new(mockAuthRepo)
+	jwtUtil := commonmiqx.NewJWTUtil("secret")
+	logger, _ := zap.NewProduction()
+	uc := NewAuthUsecase(repo, jwtUtil, logger)
+
+	repo.On("Register", mock.AnythingOfType("entity.User")).Return(errors.New("db error"))
+	err := uc.Register("test", "12345", "user")
+	assert.Error(t, err)
+}
+
+func TestUpdateUserRole_Success(t *testing.T) {
+	repo := new(mockAuthRepo)
+	jwtUtil := commonmiqx.NewJWTUtil("secret")
+	logger, _ := zap.NewProduction()
+	uc := NewAuthUsecase(repo, jwtUtil, logger)
+
+	repo.On("UpdateUserRole", 1, "admin").Return(nil)
+	err := uc.UpdateUserRole(1, "admin")
+	assert.NoError(t, err)
+}
+
+func TestUpdateUserRole_InvalidRole(t *testing.T) {
+	repo := new(mockAuthRepo)
+	jwtUtil := commonmiqx.NewJWTUtil("secret")
+	logger, _ := zap.NewProduction()
+	uc := NewAuthUsecase(repo, jwtUtil, logger)
+
+	err := uc.UpdateUserRole(1, "superuser")
+	assert.Error(t, err)
+}
+
+func TestUpdateUserRole_RepoError(t *testing.T) {
+	repo := new(mockAuthRepo)
+	jwtUtil := commonmiqx.NewJWTUtil("secret")
+	logger, _ := zap.NewProduction()
+	uc := NewAuthUsecase(repo, jwtUtil, logger)
+
+	repo.On("UpdateUserRole", 1, "admin").Return(errors.New("db error"))
+	err := uc.UpdateUserRole(1, "admin")
+	assert.Error(t, err)
 }

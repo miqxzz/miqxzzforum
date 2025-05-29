@@ -1,6 +1,6 @@
 module github.com/miqxzz/miqxzzforum/auth_service
 
-go 1.23.6
+go 1.23.0
 
 toolchain go1.24.0
 
@@ -11,7 +11,7 @@ require (
 	github.com/jmoiron/sqlx v1.4.0
 	github.com/joho/godotenv v1.5.1
 	github.com/mattn/go-sqlite3 v1.14.27
-	github.com/miqxzz/commonmiqx v0.0.0-20240218180000-bebf38eb029a
+	github.com/miqxzz/commonmiqx v0.0.0-20250527112053-bebf38eb029a
 	github.com/stretchr/testify v1.10.0
 	github.com/swaggo/files v1.0.1
 	github.com/swaggo/gin-swagger v1.6.0
@@ -21,8 +21,6 @@ require (
 	google.golang.org/grpc v1.64.1
 	google.golang.org/protobuf v1.36.6
 )
-
-replace github.com/miqxzz/commonmiqx => ../commonmiqx
 
 require (
 	github.com/KyleBanks/depth v1.2.1 // indirect

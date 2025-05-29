@@ -3,52 +3,88 @@ import axios from 'axios';
 import styled from 'styled-components';
 import CommentList from './CommentList';
 import AddComment from './AddComment';
+import Chat from '../Chat/chat';
+import { useAuth } from '../Chat/AuthContext';
 
 // === Styled Components ===
 
-const Container = styled.div`
-    max-width: 800px;
-    margin: 20px auto;
-    padding: 20px;
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+const PostListContainer = styled.div`
+    background-color: #f8f4fc;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px #e1d5ee44;
+    padding: 24px;
+    font-family: 'Montserrat', sans-serif;
 `;
 
 const PostCard = styled.div`
-    background: white;
-    border-radius: 8px;
-    padding: 20px;
-    margin-bottom: 20px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    border: 1px solid #e0e0e0;
-    transition: transform 0.2s ease;
-
+    background: linear-gradient(135deg, #f8f4fc 60%, #e1d5ee 100%);
+    border-radius: 16px;
+    padding: 32px 28px 24px 28px;
+    margin-bottom: 32px;
+    box-shadow: 0 4px 24px 0 #e1d5ee88;
+    border: 1.5px solid #e0e0e0;
+    transition: transform 0.2s, box-shadow 0.2s;
+    position: relative;
+    overflow: hidden;
     &:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        transform: translateY(-4px) scale(1.01);
+        box-shadow: 0 8px 32px 0 #c8a2e8aa;
     }
 `;
 
 const PostTitle = styled.h2`
-    color: #8e44ad;
-    margin: 0 0 10px 0;
-    font-size: 1.5rem;
-    font-weight: 600;
+    color: #7c3aed;
+    margin: 0 0 12px 0;
+    font-size: 2.1rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    background: linear-gradient(90deg, #a259ff 0%, #f8f4fc 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 `;
 
 const PostMeta = styled.div`
-    color: #666;
-    font-size: 0.9rem;
-    margin-bottom: 15px;
-    font-weight: 400;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    color: #b085d6;
+    font-size: 1rem;
+    margin-bottom: 18px;
+    font-weight: 500;
+    font-family: 'Montserrat', sans-serif;
+`;
+
+const PostAuthor = styled.span`
+    color: #8e44ad;
+    font-weight: 600;
+`;
+
+const PostDate = styled.span`
+    color: #b085d6;
+    font-size: 0.95rem;
+    font-style: italic;
 `;
 
 const PostContent = styled.p`
-    color: #333;
-    line-height: 1.6;
-    margin-bottom: 15px;
+    color: #3d2466;
+    line-height: 1.7;
+    margin-bottom: 22px;
+    font-size: 1.15rem;
     font-weight: 400;
+    font-family: 'Montserrat', sans-serif;
+    background: #fff;
+    border-radius: 8px;
+    padding: 18px 16px;
+    box-shadow: 0 2px 8px #e1d5ee33;
+`;
+
+const DecorativeLine = styled.div`
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, #a259ff 0%, #f8f4fc 100%);
+    margin: 18px 0 22px 0;
+    border-radius: 2px;
 `;
 
 const PostActions = styled.div`
@@ -109,10 +145,9 @@ const LoadingMessage = styled.p`
     font-weight: 400;
 `;
 
-const ErrorMessage = styled.p`
-    color: #d32f2f;
-    text-align: center;
-    font-weight: 500;
+const ErrorText = styled.div`
+    color: #d291bc;
+    font-family: 'Montserrat', sans-serif;
 `;
 
 const PaginationContainer = styled.div`
@@ -141,6 +176,13 @@ const PageSizeSelect = styled.select`
     border: 1px solid #ddd;
 `;
 
+const PostListWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: 'Montserrat', sans-serif;
+`;
+
 // === PostList Component ===
 
 const PostList = () => {
@@ -157,6 +199,8 @@ const PostList = () => {
         total: 0
     });
 
+    const { isAuthenticated } = useAuth();
+
     const fetchPosts = useCallback(async () => {
         try {
             const response = await axios.get('http://localhost:8081/posts', {
@@ -171,7 +215,7 @@ const PostList = () => {
                 total: response.data.total || 0
             }));
         } catch (error) {
-            console.error('Error fetching posts:', error);
+            console.error('Ошибка получения постов:', error);
         }
     }, [pagination.page, pagination.limit]);
 
@@ -189,7 +233,7 @@ const PostList = () => {
         const token = localStorage.getItem('token');
 
         if (!token) {
-            alert('You are not authenticated.');
+            alert('Вы не авторизованы.');
             return;
         }
 
@@ -201,11 +245,11 @@ const PostList = () => {
             });
             fetchPosts(); // Обновляем список с учетом пагинации
         } catch (error) {
-            console.error('Error deleting post:', error);
+            console.error('Ошибка удаления поста:', error);
             if (error.response && error.response.status === 403) {
-                alert('You are not authorized to delete this post.');
+                alert('У вас нет прав на удаление этого поста.');
             } else {
-                alert('Failed to delete post.');
+                alert('Не удалось удалить пост.');
             }
         }
     };
@@ -226,7 +270,7 @@ const PostList = () => {
         const token = localStorage.getItem('token');
 
         if (!token) {
-            alert('You are not authenticated.');
+            alert('Вы не авторизованы.');
             return;
         }
 
@@ -242,11 +286,11 @@ const PostList = () => {
             setEditingPostId(null);
             fetchPosts();
         } catch (error) {
-            console.error('Error updating post:', error);
+            console.error('Ошибка обновления поста:', error);
             if (error.response && error.response.status === 403) {
-                alert('You are not authorized to edit this post.');
+                alert('У вас нет прав на редактирование этого поста.');
             } else {
-                alert('Failed to update post.');
+                alert('Не удалось обновить пост.');
             }
         }
     };
@@ -271,110 +315,116 @@ const PostList = () => {
     };
 
     if (posts === null) {
-        return <LoadingMessage>Loading posts...</LoadingMessage>;
+        return <LoadingMessage>Загрузка постов...</LoadingMessage>;
     }
 
     if (posts.length === 0 && !isAdmin) {
-        return <LoadingMessage>No posts available.</LoadingMessage>;
+        return <LoadingMessage>Нет доступных постов.</LoadingMessage>;
     }
 
     const totalPages = Math.ceil(pagination.total / pagination.limit);
 
     return (
-        <Container>
-            {posts.length === 0 && isAdmin ? (
-                <LoadingMessage>No posts yet.</LoadingMessage>
-            ) : (
-                <>
-                    {posts.map(post => (
-                        <PostCard key={post.id}>
-                            {editingPostId === post.id ? (
-                                <>
-                                    <input 
-                                        type="text" 
-                                        value={editTitle} 
-                                        onChange={(e) => setEditTitle(e.target.value)} 
-                                        style={{width: '100%', marginBottom: '10px', fontSize: '32px', textAlign: 'center'}}
-                                    />
-                                    <textarea 
-                                        value={editContent} 
-                                        onChange={(e) => setEditContent(e.target.value)} 
-                                        style={{width: '100%', minHeight: '100px', marginBottom: '10px'}}
-                                    />
-                                    <PostActions>
-                                        <ButtonContainer>
-                                            <button onClick={() => handleSaveEdit(post.id)}>Save</button>
-                                            <button onClick={handleCancelEdit}>Cancel</button>
-                                        </ButtonContainer>
-                                    </PostActions>
-                                </>
-                            ) : (
-                                <>
-                                    <PostTitle>{post.title}</PostTitle>
-                                    <PostMeta>Posted by: {post.username || `User ID: ${post.author_id}`}</PostMeta>
-                                    <PostContent>{post.content}</PostContent>
-                                    <CommentList postId={post.id} />
-                                    <AddComment postId={post.id} onCommentCreated={handleCommentCreated} />
-                                    <PostActions>
-                                        {(isAdmin || userId === post.author_id) && (
+        <PostListWrapper>
+            <PostListContainer>
+                {posts.length === 0 && isAdmin ? (
+                    <LoadingMessage>Нет доступных постов.</LoadingMessage>
+                ) : (
+                    <>
+                        {posts.map(post => (
+                            <PostCard key={post.id}>
+                                {editingPostId === post.id ? (
+                                    <>
+                                        <input 
+                                            type="text" 
+                                            value={editTitle} 
+                                            onChange={(e) => setEditTitle(e.target.value)} 
+                                            style={{width: '100%', marginBottom: '10px', fontSize: '32px', textAlign: 'center'}}
+                                        />
+                                        <textarea 
+                                            value={editContent} 
+                                            onChange={(e) => setEditContent(e.target.value)} 
+                                            style={{width: '100%', minHeight: '100px', marginBottom: '10px'}}
+                                        />
+                                        <PostActions>
                                             <ButtonContainer>
-                                                <EditButton onClick={() => handleEditPost(post)}>
-                                                    Edit
-                                                </EditButton>
-                                                <DeleteButton onClick={() => handleDeletePost(post.id)}>
-                                                    Delete
-                                                </DeleteButton>
+                                                <button onClick={() => handleSaveEdit(post.id)}>Сохранить</button>
+                                                <button onClick={handleCancelEdit}>Отменить</button>
                                             </ButtonContainer>
-                                        )}
-                                    </PostActions>
-                                </>
-                            )}
-                        </PostCard>
-                    ))}
+                                        </PostActions>
+                                    </>
+                                ) : (
+                                    <>
+                                        <PostTitle>{post.title}</PostTitle>
+                                        <PostMeta>
+                                            <PostAuthor>От {post.username || `ID пользователя: ${post.author_id}`}</PostAuthor>
+                                        </PostMeta>
+                                        <DecorativeLine />
+                                        <PostContent>{post.content}</PostContent>
+                                        <CommentList postId={post.id} />
+                                        <AddComment postId={post.id} onCommentCreated={handleCommentCreated} />
+                                        <PostActions>
+                                            {(isAdmin || userId === post.author_id) && (
+                                                <ButtonContainer>
+                                                    <EditButton onClick={() => handleEditPost(post)}>
+                                                        Редактировать
+                                                    </EditButton>
+                                                    <DeleteButton onClick={() => handleDeletePost(post.id)}>
+                                                        Удалить
+                                                    </DeleteButton>
+                                                </ButtonContainer>
+                                            )}
+                                        </PostActions>
+                                    </>
+                                )}
+                            </PostCard>
+                        ))}
 
-                    <PaginationContainer>
-                        <PageSizeSelect 
-                            value={pagination.limit} 
-                            onChange={handleLimitChange}
-                        >
-                            <option value={5}>5 per page</option>
-                            <option value={10}>10 per page</option>
-                            <option value={20}>20 per page</option>
-                        </PageSizeSelect>
+                        <PaginationContainer>
+                            <PageSizeSelect 
+                                value={pagination.limit} 
+                                onChange={handleLimitChange}
+                            >
+                                <option value={5}>5 на странице</option>
+                                <option value={10}>10 на странице</option>
+                                <option value={20}>20 на странице</option>
+                            </PageSizeSelect>
 
-                        <PaginationButton
-                            onClick={() => handlePageChange(1)}
-                            disabled={pagination.page <= 1}
-                        >
-                            First
-                        </PaginationButton>
+                            <PaginationButton
+                                onClick={() => handlePageChange(1)}
+                                disabled={pagination.page <= 1}
+                            >
+                                Первая
+                            </PaginationButton>
 
-                        <PaginationButton
-                            onClick={() => handlePageChange(pagination.page - 1)}
-                            disabled={pagination.page <= 1}
-                        >
-                            Previous
-                        </PaginationButton>
+                            <PaginationButton
+                                onClick={() => handlePageChange(pagination.page - 1)}
+                                disabled={pagination.page <= 1}
+                            >
+                                Предыдущая
+                            </PaginationButton>
 
-                        <span>Page {pagination.page} of {totalPages}</span>
+                            <span>Страница {pagination.page} из {totalPages}</span>
 
-                        <PaginationButton
-                            onClick={() => handlePageChange(pagination.page + 1)}
-                            disabled={pagination.page >= totalPages}
-                        >
-                            Next
-                        </PaginationButton>
+                            <PaginationButton
+                                onClick={() => handlePageChange(pagination.page + 1)}
+                                disabled={pagination.page >= totalPages}
+                            >
+                                Следующая
+                            </PaginationButton>
 
-                        <PaginationButton
-                            onClick={() => handlePageChange(totalPages)}
-                            disabled={pagination.page >= totalPages}
-                        >
-                            Last
-                        </PaginationButton>
-                    </PaginationContainer>
-                </>
-            )}
-        </Container>
+                            <PaginationButton
+                                onClick={() => handlePageChange(totalPages)}
+                                disabled={pagination.page >= totalPages}
+                            >
+                                Последняя
+                            </PaginationButton>
+                        </PaginationContainer>
+                    </>
+                )}
+            </PostListContainer>
+            <Chat />
+        </PostListWrapper>
     );
 };
 

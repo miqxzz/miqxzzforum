@@ -23,7 +23,7 @@ export const AuthProvider = ({ children }) => {
                 const role = localStorage.getItem('role');
 
                 if (!id || !username || !role) {
-                    console.warn('Incomplete user data in localStorage');
+                    console.warn('Неполные данные пользователя в localStorage');
                     localStorage.removeItem('token');
                     setIsLoading(false);
                     return;
@@ -37,7 +37,7 @@ export const AuthProvider = ({ children }) => {
                 });
                 setIsAuthenticated(true);
             } catch (error) {
-                console.error('Failed to load auth data:', error);
+                console.error('Не удалось загрузить данные авторизации:', error);
                 localStorage.clear();
             } finally {
                 setIsLoading(false);
@@ -50,7 +50,7 @@ export const AuthProvider = ({ children }) => {
     const login = (token, userData) => {
         try {
             if (!token || !userData?.id || !userData.username || !userData.role) {
-                throw new Error('Invalid login data');
+                throw new Error('Неверные данные для входа');
             }
 
             localStorage.setItem('token', token);
@@ -66,9 +66,9 @@ export const AuthProvider = ({ children }) => {
             });
             setIsAuthenticated(true);
         } catch (error) {
-            console.error('Login failed:', error);
+            console.error('Не удалось войти:', error);
             throw error;
-        }
+        }   
     };
 
     const logout = () => {
@@ -77,7 +77,7 @@ export const AuthProvider = ({ children }) => {
             setUser(null);
             setIsAuthenticated(false);
         } catch (error) {
-            console.error('Logout failed:', error);
+            console.error('Не удалось выйти:', error);
         }
     };
 
@@ -101,7 +101,7 @@ AuthProvider.propTypes = {
 export const useAuth = () => {
     const context = useContext(AuthContext);
     if (!context) {
-        throw new Error('useAuth must be used within AuthProvider');
+        throw new Error('useAuth должен использоваться внутри AuthProvider');
     }
     return context;
 };

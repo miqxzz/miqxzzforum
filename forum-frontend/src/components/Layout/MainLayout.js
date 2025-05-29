@@ -2,52 +2,38 @@ import React from 'react';
 import styled from 'styled-components';
 import Navbar from './Navbar';
 
-const LayoutContainer = styled.div`
+const Sidebar = styled.div`
+  width: 240px;
+  min-width: 200px;
+  background: #a678f7;
+  color: #fff;
   display: flex;
   flex-direction: column;
+  align-items: stretch;
+  box-shadow: 2px 0 8px #e1d5ee44;
+  font-family: 'Montserrat', sans-serif;
+  padding-top: 0;
+`;
+
+const LayoutContainer = styled.div`
+  display: flex;
   min-height: 100vh;
 `;
 
 const Content = styled.div`
-  display: flex;
   flex: 1;
-  padding: 20px;
-`;
-
-const PostListContainer = styled.div`
-  flex: 1;
-  margin-right: 320px; /* Ширина чата + отступ */
-`;
-
-const ChatContainer = styled.div`
-  width: 300px;
-  position: fixed;
-  top: 60px; /* Высота шапки */
-  right: 20px;
-  height: calc(100vh - 80px); /* Высота окна минус шапка */
+  padding: 40px 40px 40px 0;
+  background: #f8f4fc;
 `;
 
 const MainLayout = ({ children }) => {
     return (
         <LayoutContainer>
-            <Navbar />
+            <Sidebar>
+                <Navbar />
+            </Sidebar>
             <Content>
-                <PostListContainer>
-                    {React.Children.map(children, child => {
-                        if (child.type && child.type.name !== 'Chat') {
-                            return child;
-                        }
-                        return null;
-                    })}
-                </PostListContainer>
-                <ChatContainer>
-                    {React.Children.map(children, child => {
-                        if (child.type && child.type.name === 'Chat') {
-                            return child;
-                        }
-                        return null;
-                    })}
-                </ChatContainer>
+                {children}
             </Content>
         </LayoutContainer>
     );

@@ -6,8 +6,9 @@ const CommentListContainer = styled.div`
     margin-top: 15px;
     padding: 10px;
     border-radius: 8px;
-    background-color: #f8f8f8;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    background-color: #f8f4fc;
+    box-shadow: 0 2px 8px #e1d5ee44;
+    font-family: 'Montserrat', sans-serif;
 `;
 
 const CommentItem = styled.div`
@@ -21,15 +22,17 @@ const CommentItem = styled.div`
 
 const CommentContent = styled.p`
     font-size: 14px;
-    color: #333;
+    color: #3d2466;
     margin-bottom: 5px;
     font-weight: 400;
+    font-family: 'Montserrat', sans-serif;
 `;
 
 const CommentAuthor = styled.small`
-    color: #777;
+    color: #b085d6;
     font-style: italic;
     font-weight: 300;
+    font-family: 'Montserrat', sans-serif;
 `;
 
 const DeleteButton = styled.button`
@@ -61,8 +64,9 @@ const LoadingMessage = styled.p`
 `;
 
 const ErrorMessage = styled.p`
-    color: #d32f2f;
+    color: #d291bc;
     font-weight: 500;
+    font-family: 'Montserrat', sans-serif;
 `;
 
 const NoCommentsMessage = styled.p`
@@ -137,7 +141,7 @@ const CommentList = ({ postId }) => {
         setError(null);
 
         if (cancelTokenSource.current) {
-            cancelTokenSource.current.cancel('Request canceled due to new request');
+            cancelTokenSource.current.cancel('Запрос отменен из-за нового запроса');
         }
         
         cancelTokenSource.current = axios.CancelToken.source();
@@ -161,7 +165,7 @@ const CommentList = ({ postId }) => {
             }));
         } catch (error) {
             if (!axios.isCancel(error)) {
-                console.error('Error fetching comments:', error);
+                console.error('Ошибка получения комментариев:', error);
                 setError(error);
             }
         } finally {
@@ -174,7 +178,7 @@ const CommentList = ({ postId }) => {
         const token = localStorage.getItem('token');
 
         if (!token) {
-            alert('You are not authenticated.');
+            alert('Вы не авторизованы.');
             return;
         }
 
@@ -186,11 +190,11 @@ const CommentList = ({ postId }) => {
             });
             fetchComments();
         } catch (error) {
-            console.error('Error deleting comment:', error);
+            console.error('Ошибка удаления комментария:', error);
             if (error.response && error.response.status === 403) {
-                alert('You are not authorized to delete this comment.');
+                alert('У вас нет прав на удаление этого комментария.');
             } else {
-                alert('Failed to delete comment.');
+                alert('Не удалось удалить комментарий.');
             }
         }
     };
@@ -204,7 +208,7 @@ const CommentList = ({ postId }) => {
         return () => {
             clearInterval(refreshInterval.current);
             if (cancelTokenSource.current) {
-                cancelTokenSource.current.cancel('Component unmounted');
+                cancelTokenSource.current.cancel('Компонент отмонтирован');
             }
         };
     }, [postId, pagination.page, pagination.limit]);
@@ -224,28 +228,33 @@ const CommentList = ({ postId }) => {
         });
     };
 
-    if (loading) return <LoadingMessage>Loading comments...</LoadingMessage>;
-    if (error) return <ErrorMessage>Error: {error.message} {error.response?.status && `(Status: ${error.response.status})`}</ErrorMessage>;
+    if (loading) return <LoadingMessage>Загрузка комментариев...</LoadingMessage>;
+    if (error) return <ErrorMessage>Ошибка: {error.message} {error.response?.status && `(Статус: ${error.response.status})`}</ErrorMessage>;
 
     const totalPages = Math.ceil(pagination.total / pagination.limit);
 
     return (
         <CommentListContainer>
-            <h4>Comments ({pagination.total}):</h4>
+            <h4>Комментарии ({pagination.total}):</h4>
             
             {comments.length ? (
                 <>
                     {comments.map(comment => (
                         <CommentItem key={comment.id}>
                             <CommentHeader>
-                                <CommentContent>{comment.content}</CommentContent>
+                                <CommentContent>
+                                    {comment.content}
+                                    <span style={{color: '#b085d6', fontSize: '12px', marginLeft: '8px'}}>
+                                        {comment.created_at ? new Date(comment.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
+                                    </span>
+                                </CommentContent>
                                 {(isAdmin || userId === comment.author_id) && (
                                     <DeleteButton onClick={() => handleDeleteComment(comment.id)}>
-                                        Delete
+                                        Удалить
                                     </DeleteButton>
                                 )}
                             </CommentHeader>
-                            <CommentAuthor>By {comment.username || `User ID: ${comment.author_id}`}</CommentAuthor>
+                            <CommentAuthor>От {comment.username || `ID пользователя: ${comment.author_id}`}</CommentAuthor>
                         </CommentItem>
                     ))}
                     
@@ -254,44 +263,44 @@ const CommentList = ({ postId }) => {
                             onClick={() => handlePageChange(1)}
                             disabled={pagination.page <= 1}
                         >
-                            First
+                            Первая
                         </PaginationButton>
                         
                         <PaginationButton
                             onClick={() => handlePageChange(pagination.page - 1)}
                             disabled={pagination.page <= 1}
                         >
-                            Previous
+                            Предыдущая
                         </PaginationButton>
                         
-                        <span>Page {pagination.page} of {totalPages}</span>
+                        <span>Страница {pagination.page} из {totalPages}</span>
                         
                         <PaginationButton
                             onClick={() => handlePageChange(pagination.page + 1)}
                             disabled={pagination.page >= totalPages}
                         >
-                            Next
+                            Следующая
                         </PaginationButton>
                         
                         <PaginationButton
                             onClick={() => handlePageChange(totalPages)}
                             disabled={pagination.page >= totalPages}
                         >
-                            Last
+                            Последняя
                         </PaginationButton>
                         
                         <PageSizeSelect 
                             value={pagination.limit} 
                             onChange={handleLimitChange}
                         >
-                            <option value={3}>3 per page</option>
-                            <option value={5}>5 per page</option>
-                            <option value={10}>10 per page</option>
+                            <option value={3}>3 на странице</option>
+                            <option value={5}>5 на странице</option>
+                            <option value={10}>10 на странице</option>
                         </PageSizeSelect>
                     </PaginationContainer>
                 </>
             ) : (
-                <NoCommentsMessage>No comments yet.</NoCommentsMessage>
+                <NoCommentsMessage>Нет комментариев.</NoCommentsMessage>
             )}
         </CommentListContainer>
     );

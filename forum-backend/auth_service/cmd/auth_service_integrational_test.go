@@ -104,4 +104,70 @@ func TestAuthService_Integration(t *testing.T) {
 		assert.Contains(t, w.Body.String(), "username")
 		assert.Contains(t, w.Body.String(), "userID")
 	})
+
+	t.Run("RegisterUser_InvalidPassword", func(t *testing.T) {
+		reqBody := entity.RegisterRequest{
+			Username: "shortpass",
+			Password: "123",
+			Role:     "user",
+		}
+		reqBodyBytes, _ := json.Marshal(reqBody)
+
+		w := httptest.NewRecorder()
+		req, _ := http.NewRequest(http.MethodPost, "/register", bytes.NewBuffer(reqBodyBytes))
+		req.Header.Set("Content-Type", "application/json")
+		r.ServeHTTP(w, req)
+
+		assert.Equal(t, http.StatusBadRequest, w.Code)
+		assert.Contains(t, w.Body.String(), "пароль должен содержать минимум 5 символов")
+	})
+
+	t.Run("RegisterUser_AlreadyExists", func(t *testing.T) {
+		reqBody := entity.RegisterRequest{
+			Username: "testuser",
+			Password: "password",
+			Role:     "user",
+		}
+		reqBodyBytes, _ := json.Marshal(reqBody)
+
+		w := httptest.NewRecorder()
+		req, _ := http.NewRequest(http.MethodPost, "/register", bytes.NewBuffer(reqBodyBytes))
+		req.Header.Set("Content-Type", "application/json")
+		r.ServeHTTP(w, req)
+
+		assert.Equal(t, http.StatusInternalServerError, w.Code)
+		assert.Contains(t, w.Body.String(), "UNIQUE constraint failed")
+	})
+
+	t.Run("LoginUser_WrongPassword", func(t *testing.T) {
+		reqBody := entity.LoginRequest{
+			Username: "testuser",
+			Password: "wrongpassword",
+		}
+		reqBodyBytes, _ := json.Marshal(reqBody)
+
+		w := httptest.NewRecorder()
+		req, _ := http.NewRequest(http.MethodPost, "/login", bytes.NewBuffer(reqBodyBytes))
+		req.Header.Set("Content-Type", "application/json")
+		r.ServeHTTP(w, req)
+
+		assert.Equal(t, http.StatusUnauthorized, w.Code)
+		assert.Contains(t, w.Body.String(), "invalid credentials")
+	})
+
+	t.Run("LoginUser_NotExists", func(t *testing.T) {
+		reqBody := entity.LoginRequest{
+			Username: "nouser",
+			Password: "password",
+		}
+		reqBodyBytes, _ := json.Marshal(reqBody)
+
+		w := httptest.NewRecorder()
+		req, _ := http.NewRequest(http.MethodPost, "/login", bytes.NewBuffer(reqBodyBytes))
+		req.Header.Set("Content-Type", "application/json")
+		r.ServeHTTP(w, req)
+
+		assert.Equal(t, http.StatusUnauthorized, w.Code)
+		assert.Contains(t, w.Body.String(), "invalid credentials")
+	})
 }

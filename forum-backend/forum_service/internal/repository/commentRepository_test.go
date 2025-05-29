@@ -134,3 +134,111 @@ func TestCommentsRepository_GetCommentsByPostID_Failure(t *testing.T) {
 
 	assert.NoError(t, mock.ExpectationsWereMet())
 }
+
+func TestCommentsRepository_GetCommentByID_Success(t *testing.T) {
+	logger, _ := zap.NewProduction()
+	db, mock, err := sqlmock.New()
+	assert.NoError(t, err)
+	defer db.Close()
+
+	dbAdapter := adapters.DbAdapter{db}
+	commentsRepo := NewCommentsRepository(&dbAdapter, logger)
+
+	comment := entity.Comment{ID: 1, PostId: 1, AuthorId: 1, Content: "Test", CreatedAt: time.Now()}
+	rows := sqlmock.NewRows([]string{"id", "post_id", "author_id", "content", "created_at"}).
+		AddRow(comment.ID, comment.PostId, comment.AuthorId, comment.Content, comment.CreatedAt)
+	mock.ExpectQuery(`SELECT id, post_id, author_id, content, created_at FROM comments WHERE id = \$1`).
+		WithArgs(comment.ID).
+		WillReturnRows(rows)
+
+	result, err := commentsRepo.GetCommentByID(context.Background(), comment.ID)
+	assert.NoError(t, err)
+	assert.Equal(t, comment, result)
+	assert.NoError(t, mock.ExpectationsWereMet())
+}
+
+func TestCommentsRepository_GetCommentByID_NotFound(t *testing.T) {
+	logger, _ := zap.NewProduction()
+	db, mock, err := sqlmock.New()
+	assert.NoError(t, err)
+	defer db.Close()
+
+	dbAdapter := adapters.DbAdapter{db}
+	commentsRepo := NewCommentsRepository(&dbAdapter, logger)
+
+	mock.ExpectQuery(`SELECT id, post_id, author_id, content, created_at FROM comments WHERE id = \$1`).
+		WithArgs(42).
+		WillReturnRows(sqlmock.NewRows([]string{"id", "post_id", "author_id", "content", "created_at"}))
+
+	result, err := commentsRepo.GetCommentByID(context.Background(), 42)
+	assert.Error(t, err)
+	assert.Equal(t, entity.Comment{}, result)
+	assert.NoError(t, mock.ExpectationsWereMet())
+}
+
+func TestCommentsRepository_DeleteComment_Success(t *testing.T) {
+	logger, _ := zap.NewProduction()
+	db, mock, err := sqlmock.New()
+	assert.NoError(t, err)
+	defer db.Close()
+
+	dbAdapter := adapters.DbAdapter{db}
+	commentsRepo := NewCommentsRepository(&dbAdapter, logger)
+
+	mock.ExpectExec(`DELETE FROM comments WHERE id = \$1`).WithArgs(1).WillReturnResult(sqlmock.NewResult(1, 1))
+
+	err = commentsRepo.DeleteComment(context.Background(), 1)
+	assert.NoError(t, err)
+	assert.NoError(t, mock.ExpectationsWereMet())
+}
+
+func TestCommentsRepository_DeleteComment_Failure(t *testing.T) {
+	logger, _ := zap.NewProduction()
+	db, mock, err := sqlmock.New()
+	assert.NoError(t, err)
+	defer db.Close()
+
+	dbAdapter := adapters.DbAdapter{db}
+	commentsRepo := NewCommentsRepository(&dbAdapter, logger)
+
+	mock.ExpectExec(`DELETE FROM comments WHERE id = \$1`).WithArgs(2).WillReturnError(errors.New("delete error"))
+
+	err = commentsRepo.DeleteComment(context.Background(), 2)
+	assert.Error(t, err)
+	assert.NoError(t, mock.ExpectationsWereMet())
+}
+
+func TestCommentsRepository_GetTotalCommentsCount_Success(t *testing.T) {
+	logger, _ := zap.NewProduction()
+	db, mock, err := sqlmock.New()
+	assert.NoError(t, err)
+	defer db.Close()
+
+	dbAdapter := adapters.DbAdapter{db}
+	commentsRepo := NewCommentsRepository(&dbAdapter, logger)
+
+	rows := sqlmock.NewRows([]string{"count"}).AddRow(5)
+	mock.ExpectQuery(`SELECT COUNT\(\*\) as count FROM comments WHERE post_id = \$1`).WithArgs(1).WillReturnRows(rows)
+
+	count, err := commentsRepo.GetTotalCommentsCount(context.Background(), 1)
+	assert.NoError(t, err)
+	assert.Equal(t, 5, count)
+	assert.NoError(t, mock.ExpectationsWereMet())
+}
+
+func TestCommentsRepository_GetTotalCommentsCount_Failure(t *testing.T) {
+	logger, _ := zap.NewProduction()
+	db, mock, err := sqlmock.New()
+	assert.NoError(t, err)
+	defer db.Close()
+
+	dbAdapter := adapters.DbAdapter{db}
+	commentsRepo := NewCommentsRepository(&dbAdapter, logger)
+
+	mock.ExpectQuery(`SELECT COUNT\(\*\) as count FROM comments WHERE post_id = \$1`).WithArgs(1).WillReturnError(errors.New("count error"))
+
+	count, err := commentsRepo.GetTotalCommentsCount(context.Background(), 1)
+	assert.Error(t, err)
+	assert.Equal(t, 0, count)
+	assert.NoError(t, mock.ExpectationsWereMet())
+}

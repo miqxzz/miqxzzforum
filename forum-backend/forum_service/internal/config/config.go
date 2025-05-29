@@ -27,8 +27,8 @@ func LoadConfig() (Config, error) {
 		DBPath:          getEnv("DB_PATH", "../../db/forum.db"),
 		MigrationsPath:  getEnv("AUTH_SERVICE_MIGRATIONS_PATH", "C:\\forum-project\\forum-backend\\auth_service\\migrations"),
 		JWTSecret:       getEnv("JWT_SECRET", "your-secret-key"),
-		HTTPAddr:        getEnv("HTTP_ADDR", ":8080"),
-		AuthServiceAddr: getEnv("AUTH_SERVICE_ADDR", "localhost:50051"),
+		HTTPAddr:        getEnv("HTTP_ADDR", ":8081"),
+		AuthServiceAddr: getEnv("AUTH_SERVICE_ADDR", "localhost:50052"),
 	}
 	return cfg, nil
 }

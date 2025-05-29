@@ -4,12 +4,12 @@ const GlobalStyle = createGlobalStyle`
   @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
 
   * {
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Montserrat', Arial, sans-serif;
   }
 
   body {
-    font-family: 'Montserrat', sans-serif;
-    background-color: #f4f4f4;
+    font-family: 'Montserrat', Arial, sans-serif;
+    background-color: #e0c3fc;
     color: #333;
     margin: 0;
     padding: 0;
@@ -17,32 +17,33 @@ const GlobalStyle = createGlobalStyle`
   }
 
   h1, h2, h3, h4, h5, h6 {
-    color: #8e44ad;
-    font-weight: 600;
+    color: #a259ff;
+    font-family: 'Montserrat', Arial, sans-serif;
   }
 
   a {
     text-decoration: none;
-    color: #9b59b6;
+    color: #a259ff;
     transition: color 0.3s ease;
+    font-family: 'Montserrat', Arial, sans-serif;
 
     &:hover {
-      color: #8e44ad;
+      color: #6c2eb7;
     }
   }
 
   button {
     padding: 10px 15px;
-    background-color: #9b59b6;
+    background-color: #a259ff;
     color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s ease;
-    font-weight: 500;
+    font-family: 'Montserrat', Arial, sans-serif;
 
     &:hover {
-      background-color: #8e44ad;
+      background-color: #6c2eb7;
     }
 
     &:disabled {
@@ -55,12 +56,19 @@ const GlobalStyle = createGlobalStyle`
   input[type="password"],
   textarea {
     padding: 8px;
-    border: 1px solid #ddd;
+    border: 1px solid #a259ff;
     border-radius: 4px;
     margin-bottom: 10px;
     width: 100%;
     box-sizing: border-box;
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Montserrat', Arial, sans-serif;
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    font-family: 'Montserrat', Arial, sans-serif;
+    color: #bfa6e6;
+    opacity: 1;
   }
 `;
 

@@ -107,7 +107,7 @@ func (h *CommentHandler) CreateComment(c *gin.Context) {
 // @Success 200 {object} map[string]interface{} "comments and pagination info"
 // @Router /posts/{post_id}/comments [get]
 func (h *CommentHandler) GetComments(c *gin.Context) {
-	postID, err := strconv.Atoi(c.Param("post_id"))
+	postID, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid post ID"})
 		return

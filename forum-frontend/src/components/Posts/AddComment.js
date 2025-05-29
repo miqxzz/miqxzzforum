@@ -7,7 +7,8 @@ const AddCommentContainer = styled.div`
     padding: 15px;
     border: 1px solid #e0e0e0;
     border-radius: 6px;
-    background-color: #f9f9f9;
+    background-color: #f8f4fc;
+    font-family: 'Montserrat', sans-serif;
 `;
 
 const CommentForm = styled.form`
@@ -57,6 +58,22 @@ const SubmitButton = styled.button`
     }
 `;
 
+const AddCommentButton = styled.button`
+    background: linear-gradient(90deg, #9b59b6 0%, #8e44ad 100%);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 16px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    transition: background 0.3s, box-shadow 0.3s;
+    box-shadow: 0 2px 8px #e1d5ee44;
+    &:hover {
+        background: linear-gradient(90deg, #8e44ad 0%, #9b59b6 100%);
+        box-shadow: 0 4px 16px #c8a2e8aa;
+    }
+`;
+
 const AddComment = ({ postId, onCommentCreated }) => {
     const [content, setContent] = useState('');
 
@@ -65,12 +82,12 @@ const AddComment = ({ postId, onCommentCreated }) => {
         const token = localStorage.getItem('token');
 
         if (!content.trim()) {
-            alert('Please enter a comment.');
+            alert('Пожалуйста, введите комментарий.');
             return;
         }
 
         if (!token) {
-            alert('You are not authenticated.');
+            alert('Вы не авторизованы.');
             return;
         }
 
@@ -85,8 +102,8 @@ const AddComment = ({ postId, onCommentCreated }) => {
                 onCommentCreated();
             }
         } catch (error) {
-            console.error('Error creating comment:', error);
-            alert('Failed to post comment.');
+            console.error('Ошибка создания комментария:', error);
+            alert('Не удалось отправить комментарий.');
         }
     };
 
@@ -96,10 +113,10 @@ const AddComment = ({ postId, onCommentCreated }) => {
                 <TextArea
                     value={content}
                     onChange={(e) => setContent(e.target.value)}
-                    placeholder="Add a comment..."
+                    placeholder="Добавить комментарий..."
                     rows="3" // Allow for multiline input
                 />
-                <SubmitButton type="submit">Post Comment</SubmitButton>
+                <SubmitButton type="submit">Отправить комментарий</SubmitButton>
             </CommentForm>
         </AddCommentContainer>
     );
