@@ -104,6 +104,8 @@ func main() {
 		}
 	}()
 
+
+	
 	jwtUtil := commonmiqx.NewJWTUtil(cfg.JWTSecret)
 	userUsecase := usecase.NewAuthUsecase(userRepo, jwtUtil, logger)
 	authHandler := http.NewAuthHandler(userUsecase, jwtUtil, logger)

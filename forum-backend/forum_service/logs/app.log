@@ -1416,3 +1416,186 @@
 {"level":"info","timestamp":"2025-05-29T04:41:01.245+0400","caller":"repository/commentsRepository.go:39","msg":"Comment created successfully","commentID":22,"postID":16,"authorID":9}
 {"level":"info","timestamp":"2025-05-29T04:41:01.246+0400","caller":"usecase/CommentsUsecases.go:42","msg":"Comment created successfully","commentID":22,"postID":16}
 {"level":"info","timestamp":"2025-05-29T04:41:01.246+0400","caller":"http/CommentHandler.go:94","msg":"Comment created successfully","postID":16,"userID":9}
+{"level":"info","timestamp":"2025-05-29T04:45:56.260+0400","caller":"usecase/ChatUsecase.go:51","msg":"Fetching recent messages","limit":50}
+{"level":"info","timestamp":"2025-05-29T04:45:56.261+0400","caller":"repository/chatRepository.go:72","msg":"Recent messages retrieved successfully","count":9}
+{"level":"info","timestamp":"2025-05-29T04:45:56.261+0400","caller":"usecase/ChatUsecase.go:59","msg":"Recent messages fetched successfully","count":9}
+{"level":"info","timestamp":"2025-05-29T04:45:56.274+0400","caller":"usecase/ChatUsecase.go:51","msg":"Fetching recent messages","limit":50}
+{"level":"info","timestamp":"2025-05-29T04:45:56.275+0400","caller":"repository/chatRepository.go:72","msg":"Recent messages retrieved successfully","count":9}
+{"level":"info","timestamp":"2025-05-29T04:45:56.275+0400","caller":"usecase/ChatUsecase.go:59","msg":"Recent messages fetched successfully","count":9}
+{"level":"info","timestamp":"2025-05-29T04:46:04.309+0400","caller":"usecase/ChatUsecase.go:51","msg":"Fetching recent messages","limit":50}
+{"level":"info","timestamp":"2025-05-29T04:46:04.311+0400","caller":"repository/chatRepository.go:72","msg":"Recent messages retrieved successfully","count":9}
+{"level":"info","timestamp":"2025-05-29T04:46:04.311+0400","caller":"usecase/ChatUsecase.go:59","msg":"Recent messages fetched successfully","count":9}
+{"level":"info","timestamp":"2025-05-29T04:46:04.324+0400","caller":"usecase/ChatUsecase.go:51","msg":"Fetching recent messages","limit":50}
+{"level":"info","timestamp":"2025-05-29T04:46:04.326+0400","caller":"repository/chatRepository.go:72","msg":"Recent messages retrieved successfully","count":9}
+{"level":"info","timestamp":"2025-05-29T04:46:04.326+0400","caller":"usecase/ChatUsecase.go:59","msg":"Recent messages fetched successfully","count":9}
+{"level":"info","timestamp":"2025-05-29T12:30:33.023+0400","caller":"usecase/ChatUsecase.go:51","msg":"Fetching recent messages","limit":50}
+{"level":"info","timestamp":"2025-05-29T12:30:33.030+0400","caller":"repository/chatRepository.go:72","msg":"Recent messages retrieved successfully","count":9}
+{"level":"info","timestamp":"2025-05-29T12:30:33.030+0400","caller":"usecase/ChatUsecase.go:59","msg":"Recent messages fetched successfully","count":9}
+{"level":"info","timestamp":"2025-05-29T12:30:36.058+0400","caller":"usecase/ChatUsecase.go:51","msg":"Fetching recent messages","limit":50}
+{"level":"info","timestamp":"2025-05-29T12:30:36.060+0400","caller":"repository/chatRepository.go:72","msg":"Recent messages retrieved successfully","count":9}
+{"level":"info","timestamp":"2025-05-29T12:30:36.060+0400","caller":"usecase/ChatUsecase.go:59","msg":"Recent messages fetched successfully","count":9}
+{"level":"info","timestamp":"2025-05-29T12:31:07.121+0400","caller":"usecase/ChatUsecase.go:51","msg":"Fetching recent messages","limit":50}
+{"level":"info","timestamp":"2025-05-29T12:31:07.121+0400","caller":"repository/chatRepository.go:72","msg":"Recent messages retrieved successfully","count":9}
+{"level":"info","timestamp":"2025-05-29T12:31:07.121+0400","caller":"usecase/ChatUsecase.go:59","msg":"Recent messages fetched successfully","count":9}
+{"level":"info","timestamp":"2025-05-29T12:31:07.137+0400","caller":"usecase/ChatUsecase.go:51","msg":"Fetching recent messages","limit":50}
+{"level":"info","timestamp":"2025-05-29T12:31:07.139+0400","caller":"repository/chatRepository.go:72","msg":"Recent messages retrieved successfully","count":9}
+{"level":"info","timestamp":"2025-05-29T12:31:07.139+0400","caller":"usecase/ChatUsecase.go:59","msg":"Recent messages fetched successfully","count":9}
+{"level":"info","timestamp":"2025-05-29T12:34:22.627+0400","caller":"usecase/ChatUsecase.go:51","msg":"Fetching recent messages","limit":50}
+{"level":"info","timestamp":"2025-05-29T12:34:22.628+0400","caller":"repository/chatRepository.go:72","msg":"Recent messages retrieved successfully","count":9}
+{"level":"info","timestamp":"2025-05-29T12:34:22.628+0400","caller":"usecase/ChatUsecase.go:59","msg":"Recent messages fetched successfully","count":9}
+{"level":"info","timestamp":"2025-05-29T12:34:22.642+0400","caller":"usecase/ChatUsecase.go:51","msg":"Fetching recent messages","limit":50}
+{"level":"info","timestamp":"2025-05-29T12:34:22.642+0400","caller":"repository/chatRepository.go:72","msg":"Recent messages retrieved successfully","count":9}
+{"level":"info","timestamp":"2025-05-29T12:34:22.643+0400","caller":"usecase/ChatUsecase.go:59","msg":"Recent messages fetched successfully","count":9}
+{"level":"fatal","timestamp":"2025-05-29T12:37:03.695+0400","caller":"cmd/main.go:83","msg":"Failed to start HTTP server","error":"listen tcp :8081: bind: Only one usage of each socket address (protocol/network address/port) is normally permitted.","stacktrace":"main.main.func1\n\tC:/Users/sarat/OneDrive/Desktop/miqxzzforum/forum-backend/forum_service/cmd/main.go:83"}
+{"level":"fatal","timestamp":"2025-05-29T12:39:02.471+0400","caller":"cmd/main.go:83","msg":"Failed to start HTTP server","error":"listen tcp :8081: bind: Only one usage of each socket address (protocol/network address/port) is normally permitted.","stacktrace":"main.main.func1\n\tC:/Users/sarat/OneDrive/Desktop/miqxzzforum/forum-backend/forum_service/cmd/main.go:83"}
+{"level":"info","timestamp":"2025-05-29T12:39:11.321+0400","caller":"cmd/main.go:92","msg":"Shutting down server..."}
+{"level":"info","timestamp":"2025-05-29T12:40:33.178+0400","caller":"usecase/ChatUsecase.go:51","msg":"Fetching recent messages","limit":50}
+{"level":"info","timestamp":"2025-05-29T12:40:33.182+0400","caller":"repository/chatRepository.go:72","msg":"Recent messages retrieved successfully","count":9}
+{"level":"info","timestamp":"2025-05-29T12:40:33.183+0400","caller":"usecase/ChatUsecase.go:59","msg":"Recent messages fetched successfully","count":9}
+{"level":"info","timestamp":"2025-05-29T12:40:37.168+0400","caller":"usecase/ChatUsecase.go:51","msg":"Fetching recent messages","limit":50}
+{"level":"info","timestamp":"2025-05-29T12:40:37.170+0400","caller":"repository/chatRepository.go:72","msg":"Recent messages retrieved successfully","count":9}
+{"level":"info","timestamp":"2025-05-29T12:40:37.170+0400","caller":"usecase/ChatUsecase.go:59","msg":"Recent messages fetched successfully","count":9}
+{"level":"info","timestamp":"2025-05-29T12:40:55.982+0400","caller":"usecase/ChatUsecase.go:51","msg":"Fetching recent messages","limit":50}
+{"level":"info","timestamp":"2025-05-29T12:40:55.983+0400","caller":"repository/chatRepository.go:72","msg":"Recent messages retrieved successfully","count":9}
+{"level":"info","timestamp":"2025-05-29T12:40:55.983+0400","caller":"usecase/ChatUsecase.go:59","msg":"Recent messages fetched successfully","count":9}
+{"level":"info","timestamp":"2025-05-29T12:40:56.004+0400","caller":"usecase/ChatUsecase.go:51","msg":"Fetching recent messages","limit":50}
+{"level":"info","timestamp":"2025-05-29T12:40:56.007+0400","caller":"repository/chatRepository.go:72","msg":"Recent messages retrieved successfully","count":9}
+{"level":"info","timestamp":"2025-05-29T12:40:56.008+0400","caller":"usecase/ChatUsecase.go:59","msg":"Recent messages fetched successfully","count":9}
+{"level":"info","timestamp":"2025-05-29T12:41:09.428+0400","caller":"usecase/ChatUsecase.go:51","msg":"Fetching recent messages","limit":50}
+{"level":"info","timestamp":"2025-05-29T12:41:09.429+0400","caller":"repository/chatRepository.go:72","msg":"Recent messages retrieved successfully","count":9}
+{"level":"info","timestamp":"2025-05-29T12:41:09.431+0400","caller":"usecase/ChatUsecase.go:59","msg":"Recent messages fetched successfully","count":9}
+{"level":"info","timestamp":"2025-05-29T12:41:09.536+0400","caller":"usecase/ChatUsecase.go:51","msg":"Fetching recent messages","limit":50}
+{"level":"info","timestamp":"2025-05-29T12:41:09.536+0400","caller":"repository/chatRepository.go:72","msg":"Recent messages retrieved successfully","count":9}
+{"level":"info","timestamp":"2025-05-29T12:41:09.537+0400","caller":"usecase/ChatUsecase.go:59","msg":"Recent messages fetched successfully","count":9}
+{"level":"info","timestamp":"2025-05-29T12:41:09.549+0400","caller":"usecase/ChatUsecase.go:51","msg":"Fetching recent messages","limit":50}
+{"level":"info","timestamp":"2025-05-29T12:41:09.551+0400","caller":"repository/chatRepository.go:72","msg":"Recent messages retrieved successfully","count":9}
+{"level":"info","timestamp":"2025-05-29T12:41:09.551+0400","caller":"usecase/ChatUsecase.go:59","msg":"Recent messages fetched successfully","count":9}
+{"level":"info","timestamp":"2025-05-29T12:43:27.564+0400","caller":"usecase/ChatUsecase.go:51","msg":"Fetching recent messages","limit":50}
+{"level":"info","timestamp":"2025-05-29T12:43:27.566+0400","caller":"repository/chatRepository.go:72","msg":"Recent messages retrieved successfully","count":9}
+{"level":"info","timestamp":"2025-05-29T12:43:27.566+0400","caller":"usecase/ChatUsecase.go:59","msg":"Recent messages fetched successfully","count":9}
+{"level":"info","timestamp":"2025-05-29T12:43:27.575+0400","caller":"usecase/ChatUsecase.go:51","msg":"Fetching recent messages","limit":50}
+{"level":"info","timestamp":"2025-05-29T12:43:27.576+0400","caller":"repository/chatRepository.go:72","msg":"Recent messages retrieved successfully","count":9}
+{"level":"info","timestamp":"2025-05-29T12:43:27.577+0400","caller":"usecase/ChatUsecase.go:59","msg":"Recent messages fetched successfully","count":9}
+{"level":"info","timestamp":"2025-05-29T12:43:27.595+0400","caller":"usecase/ChatUsecase.go:51","msg":"Fetching recent messages","limit":50}
+{"level":"info","timestamp":"2025-05-29T12:43:27.598+0400","caller":"repository/chatRepository.go:72","msg":"Recent messages retrieved successfully","count":9}
+{"level":"info","timestamp":"2025-05-29T12:43:27.598+0400","caller":"usecase/ChatUsecase.go:59","msg":"Recent messages fetched successfully","count":9}
+{"level":"info","timestamp":"2025-05-29T12:43:28.333+0400","caller":"usecase/ChatUsecase.go:51","msg":"Fetching recent messages","limit":50}
+{"level":"info","timestamp":"2025-05-29T12:43:28.334+0400","caller":"repository/chatRepository.go:72","msg":"Recent messages retrieved successfully","count":9}
+{"level":"info","timestamp":"2025-05-29T12:43:28.334+0400","caller":"usecase/ChatUsecase.go:59","msg":"Recent messages fetched successfully","count":9}
+{"level":"info","timestamp":"2025-05-29T12:43:28.353+0400","caller":"usecase/ChatUsecase.go:51","msg":"Fetching recent messages","limit":50}
+{"level":"info","timestamp":"2025-05-29T12:43:28.354+0400","caller":"repository/chatRepository.go:72","msg":"Recent messages retrieved successfully","count":9}
+{"level":"info","timestamp":"2025-05-29T12:43:28.354+0400","caller":"usecase/ChatUsecase.go:59","msg":"Recent messages fetched successfully","count":9}
+{"level":"info","timestamp":"2025-05-29T12:43:28.365+0400","caller":"usecase/ChatUsecase.go:51","msg":"Fetching recent messages","limit":50}
+{"level":"info","timestamp":"2025-05-29T12:43:28.365+0400","caller":"repository/chatRepository.go:72","msg":"Recent messages retrieved successfully","count":9}
+{"level":"info","timestamp":"2025-05-29T12:43:28.366+0400","caller":"usecase/ChatUsecase.go:59","msg":"Recent messages fetched successfully","count":9}
+{"level":"info","timestamp":"2025-05-29T12:43:30.115+0400","caller":"usecase/ChatUsecase.go:51","msg":"Fetching recent messages","limit":50}
+{"level":"info","timestamp":"2025-05-29T12:43:30.115+0400","caller":"repository/chatRepository.go:72","msg":"Recent messages retrieved successfully","count":9}
+{"level":"info","timestamp":"2025-05-29T12:43:30.116+0400","caller":"usecase/ChatUsecase.go:59","msg":"Recent messages fetched successfully","count":9}
+{"level":"info","timestamp":"2025-05-29T12:43:30.131+0400","caller":"usecase/ChatUsecase.go:51","msg":"Fetching recent messages","limit":50}
+{"level":"info","timestamp":"2025-05-29T12:43:30.132+0400","caller":"repository/chatRepository.go:72","msg":"Recent messages retrieved successfully","count":9}
+{"level":"info","timestamp":"2025-05-29T12:43:30.133+0400","caller":"usecase/ChatUsecase.go:59","msg":"Recent messages fetched successfully","count":9}
+{"level":"info","timestamp":"2025-05-29T12:43:30.149+0400","caller":"usecase/ChatUsecase.go:51","msg":"Fetching recent messages","limit":50}
+{"level":"info","timestamp":"2025-05-29T12:43:30.150+0400","caller":"repository/chatRepository.go:72","msg":"Recent messages retrieved successfully","count":9}
+{"level":"info","timestamp":"2025-05-29T12:43:30.150+0400","caller":"usecase/ChatUsecase.go:59","msg":"Recent messages fetched successfully","count":9}
+{"level":"info","timestamp":"2025-05-29T12:43:30.677+0400","caller":"usecase/ChatUsecase.go:51","msg":"Fetching recent messages","limit":50}
+{"level":"info","timestamp":"2025-05-29T12:43:30.679+0400","caller":"repository/chatRepository.go:72","msg":"Recent messages retrieved successfully","count":9}
+{"level":"info","timestamp":"2025-05-29T12:43:30.679+0400","caller":"usecase/ChatUsecase.go:59","msg":"Recent messages fetched successfully","count":9}
+{"level":"info","timestamp":"2025-05-29T12:43:30.702+0400","caller":"usecase/ChatUsecase.go:51","msg":"Fetching recent messages","limit":50}
+{"level":"info","timestamp":"2025-05-29T12:43:30.703+0400","caller":"repository/chatRepository.go:72","msg":"Recent messages retrieved successfully","count":9}
+{"level":"info","timestamp":"2025-05-29T12:43:30.703+0400","caller":"usecase/ChatUsecase.go:59","msg":"Recent messages fetched successfully","count":9}
+{"level":"info","timestamp":"2025-05-29T12:43:30.715+0400","caller":"usecase/ChatUsecase.go:51","msg":"Fetching recent messages","limit":50}
+{"level":"info","timestamp":"2025-05-29T12:43:30.717+0400","caller":"repository/chatRepository.go:72","msg":"Recent messages retrieved successfully","count":9}
+{"level":"info","timestamp":"2025-05-29T12:43:30.717+0400","caller":"usecase/ChatUsecase.go:59","msg":"Recent messages fetched successfully","count":9}
+{"level":"info","timestamp":"2025-05-29T12:43:31.402+0400","caller":"usecase/ChatUsecase.go:51","msg":"Fetching recent messages","limit":50}
+{"level":"info","timestamp":"2025-05-29T12:43:31.403+0400","caller":"repository/chatRepository.go:72","msg":"Recent messages retrieved successfully","count":9}
+{"level":"info","timestamp":"2025-05-29T12:43:31.403+0400","caller":"usecase/ChatUsecase.go:59","msg":"Recent messages fetched successfully","count":9}
+{"level":"info","timestamp":"2025-05-29T12:43:31.416+0400","caller":"usecase/ChatUsecase.go:51","msg":"Fetching recent messages","limit":50}
+{"level":"info","timestamp":"2025-05-29T12:43:31.416+0400","caller":"repository/chatRepository.go:72","msg":"Recent messages retrieved successfully","count":9}
+{"level":"info","timestamp":"2025-05-29T12:43:31.417+0400","caller":"usecase/ChatUsecase.go:59","msg":"Recent messages fetched successfully","count":9}
+{"level":"info","timestamp":"2025-05-29T12:43:32.082+0400","caller":"usecase/ChatUsecase.go:51","msg":"Fetching recent messages","limit":50}
+{"level":"info","timestamp":"2025-05-29T12:43:32.084+0400","caller":"repository/chatRepository.go:72","msg":"Recent messages retrieved successfully","count":9}
+{"level":"info","timestamp":"2025-05-29T12:43:32.085+0400","caller":"usecase/ChatUsecase.go:59","msg":"Recent messages fetched successfully","count":9}
+{"level":"info","timestamp":"2025-05-29T12:43:32.095+0400","caller":"usecase/ChatUsecase.go:51","msg":"Fetching recent messages","limit":50}
+{"level":"info","timestamp":"2025-05-29T12:43:32.097+0400","caller":"repository/chatRepository.go:72","msg":"Recent messages retrieved successfully","count":9}
+{"level":"info","timestamp":"2025-05-29T12:43:32.097+0400","caller":"usecase/ChatUsecase.go:59","msg":"Recent messages fetched successfully","count":9}
+{"level":"info","timestamp":"2025-05-29T12:43:34.444+0400","caller":"usecase/ChatUsecase.go:51","msg":"Fetching recent messages","limit":50}
+{"level":"info","timestamp":"2025-05-29T12:43:34.444+0400","caller":"repository/chatRepository.go:72","msg":"Recent messages retrieved successfully","count":9}
+{"level":"info","timestamp":"2025-05-29T12:43:34.444+0400","caller":"usecase/ChatUsecase.go:59","msg":"Recent messages fetched successfully","count":9}
+{"level":"info","timestamp":"2025-05-29T12:43:34.460+0400","caller":"usecase/ChatUsecase.go:51","msg":"Fetching recent messages","limit":50}
+{"level":"info","timestamp":"2025-05-29T12:43:34.463+0400","caller":"repository/chatRepository.go:72","msg":"Recent messages retrieved successfully","count":9}
+{"level":"info","timestamp":"2025-05-29T12:43:34.463+0400","caller":"usecase/ChatUsecase.go:59","msg":"Recent messages fetched successfully","count":9}
+{"level":"info","timestamp":"2025-05-29T12:43:34.472+0400","caller":"usecase/ChatUsecase.go:51","msg":"Fetching recent messages","limit":50}
+{"level":"info","timestamp":"2025-05-29T12:43:34.473+0400","caller":"repository/chatRepository.go:72","msg":"Recent messages retrieved successfully","count":9}
+{"level":"info","timestamp":"2025-05-29T12:43:34.474+0400","caller":"usecase/ChatUsecase.go:59","msg":"Recent messages fetched successfully","count":9}
+{"level":"info","timestamp":"2025-05-29T12:46:37.377+0400","caller":"repository/postRepository.go:120","msg":"User ID retrieved successfully","token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjo2LCJyb2xlIjoidXNlciIsImV4cCI6MTc0ODU1ODQ2OSwiaWF0IjoxNzQ4NTA4MDY5fQ.aLbhTsShgtdwDTVaKmP9I465p2A5BimRf3Z80x8wWEg","userID":6}
+{"level":"info","timestamp":"2025-05-29T12:46:37.377+0400","caller":"http/PostHandler.go:92","msg":"Creating post","post":{"id":0,"author_id":6,"title":"hdtdtgjdgj","content":"jdgjdyfh"}}
+{"level":"info","timestamp":"2025-05-29T12:46:37.378+0400","caller":"usecase/PostUsecases.go:30","msg":"Creating post","authorID":6,"title":"hdtdtgjdgj","content":"jdgjdyfh"}
+{"level":"info","timestamp":"2025-05-29T12:46:37.408+0400","caller":"repository/postRepository.go:49","msg":"Post created successfully","postID":18,"authorID":6}
+{"level":"info","timestamp":"2025-05-29T12:46:37.409+0400","caller":"usecase/PostUsecases.go:42","msg":"Post created successfully","postID":18}
+{"level":"info","timestamp":"2025-05-29T12:46:37.409+0400","caller":"http/PostHandler.go:100","msg":"Post created successfully","createdPost":{"id":18,"author_id":6,"title":"hdtdtgjdgj","content":"jdgjdyfh"}}
+{"level":"info","timestamp":"2025-05-29T12:46:45.334+0400","caller":"usecase/ChatUsecase.go:34","msg":"Handling message","userID":6,"username":"admin","content":"mhfhkjyfdg"}
+{"level":"info","timestamp":"2025-05-29T12:46:45.335+0400","caller":"repository/chatRepository.go:37","msg":"Saving message","userID":6,"username":"admin","content":"mhfhkjyfdg","timestamp":"2025-05-29T12:46:45.334+0400"}
+{"level":"info","timestamp":"2025-05-29T12:46:45.353+0400","caller":"usecase/ChatUsecase.go:46","msg":"Message stored successfully","userID":6,"username":"admin"}
+{"level":"info","timestamp":"2025-05-29T12:50:49.898+0400","caller":"usecase/ChatUsecase.go:51","msg":"Fetching recent messages","limit":50}
+{"level":"info","timestamp":"2025-05-29T12:50:49.898+0400","caller":"repository/chatRepository.go:72","msg":"Recent messages retrieved successfully","count":10}
+{"level":"info","timestamp":"2025-05-29T12:50:49.899+0400","caller":"usecase/ChatUsecase.go:59","msg":"Recent messages fetched successfully","count":10}
+{"level":"info","timestamp":"2025-05-29T12:50:49.937+0400","caller":"usecase/ChatUsecase.go:51","msg":"Fetching recent messages","limit":50}
+{"level":"info","timestamp":"2025-05-29T12:50:49.937+0400","caller":"repository/chatRepository.go:72","msg":"Recent messages retrieved successfully","count":10}
+{"level":"info","timestamp":"2025-05-29T12:50:49.938+0400","caller":"usecase/ChatUsecase.go:59","msg":"Recent messages fetched successfully","count":10}
+{"level":"info","timestamp":"2025-05-29T13:05:10.863+0400","caller":"usecase/ChatUsecase.go:51","msg":"Fetching recent messages","limit":50}
+{"level":"info","timestamp":"2025-05-29T13:05:10.865+0400","caller":"repository/chatRepository.go:72","msg":"Recent messages retrieved successfully","count":10}
+{"level":"info","timestamp":"2025-05-29T13:05:10.866+0400","caller":"usecase/ChatUsecase.go:59","msg":"Recent messages fetched successfully","count":10}
+{"level":"info","timestamp":"2025-05-29T13:05:10.876+0400","caller":"usecase/ChatUsecase.go:51","msg":"Fetching recent messages","limit":50}
+{"level":"info","timestamp":"2025-05-29T13:05:10.877+0400","caller":"repository/chatRepository.go:72","msg":"Recent messages retrieved successfully","count":10}
+{"level":"info","timestamp":"2025-05-29T13:05:10.878+0400","caller":"usecase/ChatUsecase.go:59","msg":"Recent messages fetched successfully","count":10}
+{"level":"info","timestamp":"2025-05-29T13:07:16.552+0400","caller":"usecase/ChatUsecase.go:51","msg":"Fetching recent messages","limit":50}
+{"level":"info","timestamp":"2025-05-29T13:07:16.557+0400","caller":"repository/chatRepository.go:72","msg":"Recent messages retrieved successfully","count":10}
+{"level":"info","timestamp":"2025-05-29T13:07:16.557+0400","caller":"usecase/ChatUsecase.go:59","msg":"Recent messages fetched successfully","count":10}
+{"level":"info","timestamp":"2025-05-29T13:07:19.252+0400","caller":"usecase/ChatUsecase.go:51","msg":"Fetching recent messages","limit":50}
+{"level":"info","timestamp":"2025-05-29T13:07:19.254+0400","caller":"repository/chatRepository.go:72","msg":"Recent messages retrieved successfully","count":10}
+{"level":"info","timestamp":"2025-05-29T13:07:19.254+0400","caller":"usecase/ChatUsecase.go:59","msg":"Recent messages fetched successfully","count":10}
+{"level":"info","timestamp":"2025-05-29T13:07:19.843+0400","caller":"usecase/ChatUsecase.go:51","msg":"Fetching recent messages","limit":50}
+{"level":"info","timestamp":"2025-05-29T13:07:19.845+0400","caller":"repository/chatRepository.go:72","msg":"Recent messages retrieved successfully","count":10}
+{"level":"info","timestamp":"2025-05-29T13:07:19.846+0400","caller":"usecase/ChatUsecase.go:59","msg":"Recent messages fetched successfully","count":10}
+{"level":"info","timestamp":"2025-05-29T13:07:22.988+0400","caller":"usecase/ChatUsecase.go:51","msg":"Fetching recent messages","limit":50}
+{"level":"info","timestamp":"2025-05-29T13:07:22.990+0400","caller":"repository/chatRepository.go:72","msg":"Recent messages retrieved successfully","count":10}
+{"level":"info","timestamp":"2025-05-29T13:07:22.990+0400","caller":"usecase/ChatUsecase.go:59","msg":"Recent messages fetched successfully","count":10}
+{"level":"info","timestamp":"2025-05-29T13:07:47.221+0400","caller":"usecase/ChatUsecase.go:51","msg":"Fetching recent messages","limit":50}
+{"level":"info","timestamp":"2025-05-29T13:07:47.222+0400","caller":"repository/chatRepository.go:72","msg":"Recent messages retrieved successfully","count":10}
+{"level":"info","timestamp":"2025-05-29T13:07:47.222+0400","caller":"usecase/ChatUsecase.go:59","msg":"Recent messages fetched successfully","count":10}
+{"level":"info","timestamp":"2025-05-29T13:07:47.235+0400","caller":"usecase/ChatUsecase.go:51","msg":"Fetching recent messages","limit":50}
+{"level":"info","timestamp":"2025-05-29T13:07:47.236+0400","caller":"repository/chatRepository.go:72","msg":"Recent messages retrieved successfully","count":10}
+{"level":"info","timestamp":"2025-05-29T13:07:47.236+0400","caller":"usecase/ChatUsecase.go:59","msg":"Recent messages fetched successfully","count":10}
+{"level":"info","timestamp":"2025-05-29T13:07:57.371+0400","caller":"usecase/ChatUsecase.go:51","msg":"Fetching recent messages","limit":50}
+{"level":"info","timestamp":"2025-05-29T13:07:57.372+0400","caller":"repository/chatRepository.go:72","msg":"Recent messages retrieved successfully","count":10}
+{"level":"info","timestamp":"2025-05-29T13:07:57.372+0400","caller":"usecase/ChatUsecase.go:59","msg":"Recent messages fetched successfully","count":10}
+{"level":"info","timestamp":"2025-05-29T13:07:57.452+0400","caller":"usecase/ChatUsecase.go:51","msg":"Fetching recent messages","limit":50}
+{"level":"info","timestamp":"2025-05-29T13:07:57.456+0400","caller":"repository/chatRepository.go:72","msg":"Recent messages retrieved successfully","count":10}
+{"level":"info","timestamp":"2025-05-29T13:07:57.456+0400","caller":"usecase/ChatUsecase.go:59","msg":"Recent messages fetched successfully","count":10}
+{"level":"info","timestamp":"2025-05-29T13:07:57.464+0400","caller":"usecase/ChatUsecase.go:51","msg":"Fetching recent messages","limit":50}
+{"level":"info","timestamp":"2025-05-29T13:07:57.464+0400","caller":"repository/chatRepository.go:72","msg":"Recent messages retrieved successfully","count":10}
+{"level":"info","timestamp":"2025-05-29T13:07:57.464+0400","caller":"usecase/ChatUsecase.go:59","msg":"Recent messages fetched successfully","count":10}
+{"level":"info","timestamp":"2025-05-29T13:08:03.358+0400","caller":"usecase/ChatUsecase.go:51","msg":"Fetching recent messages","limit":50}
+{"level":"info","timestamp":"2025-05-29T13:08:03.358+0400","caller":"repository/chatRepository.go:72","msg":"Recent messages retrieved successfully","count":10}
+{"level":"info","timestamp":"2025-05-29T13:08:03.359+0400","caller":"usecase/ChatUsecase.go:59","msg":"Recent messages fetched successfully","count":10}
+{"level":"info","timestamp":"2025-05-29T13:08:03.381+0400","caller":"usecase/ChatUsecase.go:51","msg":"Fetching recent messages","limit":50}
+{"level":"info","timestamp":"2025-05-29T13:08:03.382+0400","caller":"repository/chatRepository.go:72","msg":"Recent messages retrieved successfully","count":10}
+{"level":"info","timestamp":"2025-05-29T13:08:03.382+0400","caller":"usecase/ChatUsecase.go:59","msg":"Recent messages fetched successfully","count":10}
+{"level":"info","timestamp":"2025-05-29T13:08:15.461+0400","caller":"usecase/ChatUsecase.go:51","msg":"Fetching recent messages","limit":50}
+{"level":"info","timestamp":"2025-05-29T13:08:15.462+0400","caller":"repository/chatRepository.go:72","msg":"Recent messages retrieved successfully","count":10}
+{"level":"info","timestamp":"2025-05-29T13:08:15.462+0400","caller":"usecase/ChatUsecase.go:59","msg":"Recent messages fetched successfully","count":10}
+{"level":"info","timestamp":"2025-05-29T13:08:15.483+0400","caller":"usecase/ChatUsecase.go:51","msg":"Fetching recent messages","limit":50}
+{"level":"info","timestamp":"2025-05-29T13:08:15.483+0400","caller":"repository/chatRepository.go:72","msg":"Recent messages retrieved successfully","count":10}
+{"level":"info","timestamp":"2025-05-29T13:08:15.483+0400","caller":"usecase/ChatUsecase.go:59","msg":"Recent messages fetched successfully","count":10}
+{"level":"info","timestamp":"2025-05-29T13:08:15.495+0400","caller":"usecase/ChatUsecase.go:51","msg":"Fetching recent messages","limit":50}
+{"level":"info","timestamp":"2025-05-29T13:08:15.497+0400","caller":"repository/chatRepository.go:72","msg":"Recent messages retrieved successfully","count":10}
+{"level":"info","timestamp":"2025-05-29T13:08:15.497+0400","caller":"usecase/ChatUsecase.go:59","msg":"Recent messages fetched successfully","count":10}
+{"level":"info","timestamp":"2025-05-29T13:08:31.030+0400","caller":"usecase/ChatUsecase.go:34","msg":"Handling message","userID":10,"username":"admin77","content":"s vo;kfeljksfl.;jk"}
+{"level":"info","timestamp":"2025-05-29T13:08:31.031+0400","caller":"repository/chatRepository.go:37","msg":"Saving message","userID":10,"username":"admin77","content":"s vo;kfeljksfl.;jk","timestamp":"2025-05-29T13:08:31.030+0400"}
+{"level":"info","timestamp":"2025-05-29T13:08:31.036+0400","caller":"usecase/ChatUsecase.go:46","msg":"Message stored successfully","userID":10,"username":"admin77"}
+{"level":"info","timestamp":"2025-05-29T13:09:06.495+0400","caller":"http/CommentHandler.go:230","msg":"Deleting comment","commentID":21}
+{"level":"info","timestamp":"2025-05-29T13:09:06.495+0400","caller":"usecase/CommentsUsecases.go:68","msg":"Deleting comment","commentID":21}
+{"level":"info","timestamp":"2025-05-29T13:09:06.527+0400","caller":"repository/commentsRepository.go:118","msg":"Comment deleted successfully","commentID":21}
+{"level":"info","timestamp":"2025-05-29T13:09:06.529+0400","caller":"usecase/CommentsUsecases.go:76","msg":"Comment deleted successfully","commentID":21}
+{"level":"info","timestamp":"2025-05-29T13:09:06.529+0400","caller":"http/CommentHandler.go:238","msg":"Comment deleted successfully","commentID":21}
+{"level":"info","timestamp":"2025-05-29T13:44:35.388+0400","caller":"cmd/main.go:92","msg":"Shutting down server..."}
